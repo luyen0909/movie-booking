@@ -21,10 +21,9 @@ export const routes: Routes = [
       // Lưu ý: Nếu phần movies của bạn dùng Standalone Component thì dùng loadComponent. 
       // Ở đây mình giả định bạn sẽ gom nó thành routes/module.
       {
-        path: 'movies',
-        loadChildren: () => import('./features/movies/pages/movie-list/movie-list').then(m => m.MovieListComponent) 
-        // Hoặc loadComponent nếu dùng Standalone Component
-      },
+    path: 'movies',
+    loadComponent: () => import('./features/movies/pages/movie-list/movie-list').then(m => m.MovieList)
+  },
       {
         path: 'cinemas',
         loadChildren: () => import('./features/cinemas/cinemas-module').then(m => m.CinemasModule)
