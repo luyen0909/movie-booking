@@ -1,11 +1,6 @@
 <main class="home-page">
-  <section class="hero-banner">
-    <div class="banner-content">
-      <h1>Trải nghiệm điện ảnh đỉnh cao</h1>
-      <p>Đặt vé ngay để nhận combo bắp nước miễn phí và hàng ngàn ưu đãi hấp dẫn khác!</p>
-      <button class="btn-primary">Xem Lịch Chiếu</button>
-    </div>
-  </section>
+  <!-- Banner -->
+  <app-home-banner></app-home-banner>
 
   <div class="container">
     <section class="category-section">
@@ -17,27 +12,6 @@
       </div>
     </section>
 
-    <section class="movie-section">
-      <div class="section-header">
-        <h2 class="section-title">Phim Đang Chiếu</h2>
-        <a href="#" class="view-all">Xem tất cả <i class="icon-arrow-right"></i></a>
-      </div>
-      <div class="movie-grid">
-        <article class="movie-card" *ngFor="let movie of featuredMovies">
-          <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title">
-            <div class="card-overlay">
-              <button class="btn-book">Mua Vé Ngay</button>
-            </div>
-            <span class="rating"><i class="icon-star"></i> {{ movie.rating }}</span>
-          </div>
-          <div class="card-content">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            <p class="movie-genre">{{ movie.genre }}</p>
-          </div>
-        </article>
-      </div>
-    </section>
 
     <section class="mid-banner">
       <div class="mid-banner-inner">

@@ -1,14 +1,21 @@
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: #1a1a1a; color: white;">
-  <div class="logo" style="font-size: 24px; font-weight: bold; color: #e50914;">
-    🎬 MovieBooking
-  </div>
-  
-  <div class="search-bar">
-    <input type="text" placeholder="Tìm kiếm phim, rạp..." style="padding: 8px; border-radius: 4px; border: none; width: 300px;">
-  </div>
+<header style="background-color: #fff; padding: 15px 0; border-bottom: 1px solid #eee;">
+  <div class="container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 15px;">
+    
+    <!-- LOGO -->
+    <a routerLink="/" class="logo">
+      <img src="../../../../assets/images/logo.png" alt="Movie Booking Logo" style="height: 50px; object-fit: contain;" />
+    </a>
 
-  <div class="user-actions">
-    <button style="margin-right: 10px; padding: 8px 15px; cursor: pointer;">Đăng nhập</button>
-    <button style="padding: 8px 15px; background-color: #e50914; color: white; border: none; border-radius: 4px; cursor: pointer;">Đăng ký</button>
-  </div>
+    <!-- SEARCH BAR -->
+    <div class="search-bar" style="display: flex; background: #f5f5f5; padding: 8px 15px; border-radius: 20px;">
+      <input type="text" placeholder="Tìm tên phim, rạp..." style="border: none; background: transparent; outline: none; width: 250px;">
+      <button style="border: none; background: transparent; cursor: pointer;">🔍</button>
+    </div>
+
+    <!-- USER ACTIONS -->
+    <div class="user-actions" style="display: flex; align-items: center; gap: 15px;">
+      <a routerLink="/auth/login" style="text-decoration: none; color: #333; font-weight: 600;">Đăng nhập</a>
+      <a routerLink="/auth/register" style="text-decoration: none; background: #f26b38; color: white; padding: 8px 20px; border-radius: 20px; font-weight: 600;">Đăng ký</a>
+    </div>
+  </div> 
 </header>

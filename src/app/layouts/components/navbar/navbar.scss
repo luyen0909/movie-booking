@@ -8,20 +8,19 @@ $transition: all 0.3s ease;
 
 // Cố định Navbar trên cùng
 .navbar {
-  position: fixed;
+  position: sticky; /* Đổi thành sticky để dính bên dưới Header khi cuộn */
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: 999;
   background-color: $bg-light;
-  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Thêm bóng nhẹ */
   transition: $transition;
 
   // Hiệu ứng khi scroll chuột xuống
   &.scrolled {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border-bottom: none;
-    .navbar-inner { height: 65px; } // Thu nhỏ chiều cao nhẹ
+    .navbar-inner { height: 50px; } 
   }
 }
 
@@ -34,15 +33,10 @@ $transition: all 0.3s ease;
 .navbar-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 80px;
+  justify-content: center; /* Căn giữa menu */
+  height: 60px; /* Giảm chiều cao mặc định vì không còn logo */
   transition: height $transition;
-}
-
-// Logo
-.logo img {
-  height: 45px;
-  object-fit: contain;
+  position: relative;
 }
 
 // Desktop Menu Center
@@ -84,59 +78,11 @@ $transition: all 0.3s ease;
 
 // Right Actions (Search, Login, Booking)
 .nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: $bg-gray;
-    border-radius: 20px;
-    padding: 6px 15px;
-
-    input {
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 0.9rem;
-      width: 160px;
-      transition: width $transition;
-      &:focus { width: 220px; }
-    }
-
-    .btn-search {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: $text-light;
-      &:hover { color: $primary-color; }
-    }
-  }
-
-  .btn-login {
-    text-decoration: none;
-    color: $text-dark;
-    font-weight: 600;
-    transition: $transition;
-    &:hover { color: $primary-color; }
-  }
-
-  .btn-book-ticket {
-    background-color: $primary-color;
-    color: $bg-light;
-    text-decoration: none;
-    padding: 10px 24px;
-    border-radius: 25px;
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba($primary-color, 0.3);
-    transition: transform $transition, background-color $transition;
-
-    &:hover {
-      background-color: darken($primary-color, 10%);
-      transform: translateY(-2px);
-    }
-  }
+  /* Chỉ còn dùng cho nút Hamburger trên mobile */
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 // Utilities

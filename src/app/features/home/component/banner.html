@@ -1,23 +1,28 @@
+<!-- c:\laragon\www\movie-booking\src\app\features\home\components\home-banner\home-banner.html -->
 <div class="banner-slider">
   <div class="slider-wrapper">
     
-    <!-- Loop qua danh sách phim -->
     <div 
       class="slide-item" 
-      *ngFor="let movie of featuredMovies; let i = index"
+      *ngFor="let slide of slides; let i = index"
       [class.active]="i === currentSlide"
-      [style.backgroundImage]="'url(' + movie.image + ')'"
     >
+      <!-- Lớp nền Parallax riêng biệt -->
+      <div class="slide-bg"
+           [style.backgroundImage]="'url(' + slide.image + ')'"
+           [style.transform]="'translate3d(0, ' + (scrollY * 0.5) + 'px, 0)'">
+      </div>
+
       <div class="overlay-gradient"></div>
       
       <div class="container slide-content">
-        <span class="badge">{{ movie.genre }}</span>
-        <h2 class="movie-title">{{ movie.title }}</h2>
+        <span class="badge">{{ slide.genre }}</span>
+        <h2 class="movie-title">{{ slide.title }}</h2>
         <div class="meta-info">
-          <span class="rating">⭐ {{ movie.rating }}</span>
+          <span class="rating">⭐ {{ slide.rating }}</span>
           <span class="duration">2h 15m</span>
         </div>
-        <p class="description">{{ movie.description }}</p>
+        <p class="description">{{ slide.description }}</p>
         
         <div class="actions">
           <a routerLink="/booking" class="btn-primary">Đặt Vé Ngay</a>
@@ -28,12 +33,15 @@
 
   </div>
 
-  <!-- Dots Navigation -->
   <div class="dots-nav">
     <span 
-      *ngFor="let movie of featuredMovies; let i = index" 
+      *ngFor="let slide of slides; let i = index" 
       [class.active]="i === currentSlide"
       (click)="goToSlide(i)">
     </span>
   </div>
 </div>
+
+
+
+
