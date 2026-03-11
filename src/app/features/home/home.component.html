@@ -1,0 +1,38 @@
+<div class="home-page">
+  <section class="hero">
+    </section>
+
+  <section class="section category">
+    </section>
+
+  <section class="section featured">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Phim đang chiếu</h2>
+        <a href="#" class="section__link">Xem tất cả ➔</a>
+      </div>
+      
+      <div class="movie-grid">
+        <app-movie-card 
+          *ngFor="let item of featuredMovies" 
+          [movie]="item">
+        </app-movie-card>
+      </div>
+    </div>
+  </section>
+
+  <section class="section best-seller">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Top vé bán chạy tuần này</h2>
+      </div>
+      <div class="movie-grid">
+        <app-movie-card 
+          *ngFor="let item of hotMovies" 
+          [movie]="{...item, isHot: true}">
+        </app-movie-card>
+      </div>
+    </div>
+  </section>
+
+  </div>    
