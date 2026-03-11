@@ -1,0 +1,321 @@
+// Variables (Theo phong cách Galaxy Cine)
+$primary-color: #f26b38; // Cam Galaxy
+$primary-hover: #d85728;
+$text-dark: #333333;
+$text-light: #777777;
+$bg-light: #f9f9f9;
+$white: #ffffff;
+$border-radius: 8px;
+$transition: all 0.3s ease;
+
+// Base styles & Container
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.home-page {
+  font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+  color: $text-dark;
+  background-color: $white;
+}
+
+// Typography
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  border-left: 4px solid $primary-color;
+  padding-left: 10px;
+  
+  &.text-center {
+    text-align: center;
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+// Buttons
+.btn-primary {
+  background-color: $primary-color;
+  color: $white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: $border-radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  &:hover {
+    background-color: $primary-hover;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: $white;
+  padding: 12px 24px;
+  border: 2px solid $white;
+  border-radius: $border-radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  &:hover {
+    background-color: $white;
+    color: $text-dark;
+  }
+}
+
+// 1. Hero Banner
+.hero-banner {
+  height: 500px;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://placehold.co/1920x600/222/555?text=Movie+Banner') center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: $white;
+  margin-bottom: 40px;
+
+  .banner-content {
+    max-width: 600px;
+    h1 { font-size: 3rem; margin-bottom: 15px; text-transform: uppercase; }
+    p { font-size: 1.2rem; margin-bottom: 25px; line-height: 1.5; }
+  }
+}
+
+// 2. Categories
+.category-section {
+  margin-bottom: 50px;
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  .category-item {
+    background-color: $bg-light;
+    padding: 20px;
+    text-align: center;
+    border-radius: $border-radius;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition;
+    border: 1px solid #eee;
+    &:hover {
+      background-color: $primary-color;
+      color: $white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba($primary-color, 0.3);
+    }
+  }
+}
+
+// 3 & 5. Movie Sections (Featured / Best Seller)
+.movie-section {
+  margin-bottom: 60px;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .view-all {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 600;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  .movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+
+  .movie-card {
+    background: $white;
+    border-radius: $border-radius;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: $transition;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+      .card-image img { transform: scale(1.05); }
+      .card-overlay { opacity: 1; }
+    }
+
+    .card-image {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 2/3;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: $transition;
+      }
+
+      .rating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        color: #ffc107;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .card-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: $transition;
+
+        .btn-book {
+          background-color: $primary-color;
+          color: $white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 25px;
+          font-weight: bold;
+          cursor: pointer;
+          transform: translateY(20px);
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+
+    &:hover .card-overlay .btn-book {
+      transform: translateY(0);
+    }
+
+    .card-content {
+      padding: 15px;
+      text-align: center;
+      .movie-title {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .movie-genre {
+        font-size: 0.9rem;
+        color: $text-light;
+      }
+    }
+  }
+}
+
+// 4. Middle Promotion Banner
+.mid-banner {
+  background: linear-gradient(135deg, $primary-color, #ff9b71);
+  border-radius: $border-radius;
+  padding: 50px 20px;
+  text-align: center;
+  color: $white;
+  margin-bottom: 60px;
+
+  h2 { font-size: 2.5rem; margin-bottom: 10px; }
+  p { font-size: 1.1rem; margin-bottom: 20px; }
+}
+
+// 6. Customer Reviews
+.review-section {
+  margin-bottom: 60px;
+  padding: 40px 0;
+  background-color: $bg-light;
+  
+  .review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 15px;
+  }
+
+  .review-card {
+    background: $white;
+    padding: 25px;
+    border-radius: $border-radius;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    
+    .review-text {
+      font-style: italic;
+      color: $text-light;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .reviewer {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .name { font-weight: 600; color: $text-dark; }
+    }
+  }
+}
+
+// 7. Newsletter
+.newsletter-section {
+  margin-bottom: 60px;
+  
+  .newsletter-box {
+    background-color: #111;
+    color: $white;
+    padding: 50px 20px;
+    text-align: center;
+    border-radius: $border-radius;
+
+    h2 { font-size: 2rem; margin-bottom: 10px; }
+    p { margin-bottom: 25px; color: #ccc; }
+
+    .newsletter-form {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto;
+      
+      input {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: $border-radius 0 0 $border-radius;
+        outline: none;
+      }
+      button {
+        border-radius: 0 $border-radius $border-radius 0;
+      }
+    }
+  }
+}
+
+// Responsive Design (Mobile & Tablet)
+@media (max-width: 768px) {
+  .hero-banner { height: 350px; }
+  .hero-banner .banner-content h1 { font-size: 2rem; }
+  .mid-banner h2 { font-size: 1.8rem; }
+  .newsletter-section .newsletter-form { flex-direction: column; }
+  .newsletter-section .newsletter-form input { border-radius: $border-radius; margin-bottom: 10px; }
+  .newsletter-section .newsletter-form button { border-radius: $border-radius; width: 100%; }
+}

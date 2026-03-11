@@ -1,38 +1,94 @@
-<div class="home-page">
-  <section class="hero">
-    </section>
-
-  <section class="section category">
-    </section>
-
-  <section class="section featured">
-    <div class="container">
-      <div class="section__header">
-        <h2 class="section__title">Phim đang chiếu</h2>
-        <a href="#" class="section__link">Xem tất cả ➔</a>
-      </div>
-      
-      <div class="movie-grid">
-        <app-movie-card 
-          *ngFor="let item of featuredMovies" 
-          [movie]="item">
-        </app-movie-card>
-      </div>
+<main class="home-page">
+  <section class="hero-banner">
+    <div class="banner-content">
+      <h1>Trải nghiệm điện ảnh đỉnh cao</h1>
+      <p>Đặt vé ngay để nhận combo bắp nước miễn phí và hàng ngàn ưu đãi hấp dẫn khác!</p>
+      <button class="btn-primary">Xem Lịch Chiếu</button>
     </div>
   </section>
 
-  <section class="section best-seller">
-    <div class="container">
-      <div class="section__header">
-        <h2 class="section__title">Top vé bán chạy tuần này</h2>
+  <div class="container">
+    <section class="category-section">
+      <h2 class="section-title">Thể Loại Phim</h2>
+      <div class="category-grid">
+        <div class="category-item" *ngFor="let cat of categories">
+          <span>{{ cat }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="movie-section">
+      <div class="section-header">
+        <h2 class="section-title">Phim Đang Chiếu</h2>
+        <a href="#" class="view-all">Xem tất cả <i class="icon-arrow-right"></i></a>
       </div>
       <div class="movie-grid">
-        <app-movie-card 
-          *ngFor="let item of hotMovies" 
-          [movie]="{...item, isHot: true}">
-        </app-movie-card>
+        <article class="movie-card" *ngFor="let movie of featuredMovies">
+          <div class="card-image">
+            <img [src]="movie.image" [alt]="movie.title">
+            <div class="card-overlay">
+              <button class="btn-book">Mua Vé Ngay</button>
+            </div>
+            <span class="rating"><i class="icon-star"></i> {{ movie.rating }}</span>
+          </div>
+          <div class="card-content">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <p class="movie-genre">{{ movie.genre }}</p>
+          </div>
+        </article>
       </div>
-    </div>
-  </section>
+    </section>
 
-  </div>    
+    <section class="mid-banner">
+      <div class="mid-banner-inner">
+        <h2>Thứ 3 Vui Vẻ - Đồng Giá 50K</h2>
+        <p>Áp dụng cho mọi suất chiếu, mọi cụm rạp trên toàn quốc vào mỗi thứ 3 hàng tuần.</p>
+        <button class="btn-outline">Tìm hiểu thêm</button>
+      </div>
+    </section>
+
+    <section class="movie-section">
+      <div class="section-header">
+        <h2 class="section-title">Top Trending</h2>
+      </div>
+      <div class="movie-grid">
+        <article class="movie-card" *ngFor="let movie of bestSellers">
+          <div class="card-image">
+            <img [src]="movie.image" [alt]="movie.title">
+            <div class="card-overlay">
+              <button class="btn-book">Mua Vé Ngay</button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <p class="movie-genre">{{ movie.genre }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="review-section">
+      <h2 class="section-title text-center">Đánh Giá Từ Mọt Phim</h2>
+      <div class="review-grid">
+        <div class="review-card" *ngFor="let review of reviews">
+          <p class="review-text">"{{ review.content }}"</p>
+          <div class="reviewer">
+            <img [src]="review.avatar" alt="Avatar" class="avatar">
+            <span class="name">{{ review.name }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter-section">
+      <div class="newsletter-box">
+        <h2>Nhận Ưu Đãi Mới Nhất</h2>
+        <p>Đăng ký email để không bỏ lỡ những bộ phim bom tấn và khuyến mãi độc quyền.</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Nhập email của bạn..." required>
+          <button type="submit" class="btn-primary">Đăng Ký</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>

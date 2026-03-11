@@ -1,16 +1,47 @@
-<header class="navbar">
-  <div class="container navbar__inner">
-    <div class="navbar__logo">CineVerse</div>
-    <nav class="navbar__menu">
-      <a href="#">Trang chủ</a>
-      <a href="#">Phim đang chiếu</a>
-      <a href="#">Cụm rạp</a>
-      <a href="#">Tin tức</a>
-    </nav>
-    <div class="navbar__actions">
-      <button class="icon-btn" aria-label="Search"><i class="fas fa-search"></i></button>
-      <button class="icon-btn" aria-label="Cart"><i class="fas fa-shopping-cart"></i></button>
-      <button class="btn btn--primary">Đăng nhập</button>
+<nav class="navbar" [class.scrolled]="isScrolled">
+  <div class="container navbar-inner">
+    
+    <a routerLink="/" class="logo">
+      <img src="https://placehold.co/100x40/f26b38/fff?text=LOGO" alt="Movie Booking Logo" />
+    </a>
+
+    <ul class="nav-links desktop-only">
+      <li><a routerLink="/movies" routerLinkActive="active">Phim</a></li>
+      <li><a routerLink="/cinemas" routerLinkActive="active">Góc Điện Ảnh</a></li>
+      <li><a routerLink="/showtimes" routerLinkActive="active">Sự Kiện</a></li>
+      <li><a routerLink="/prices" routerLinkActive="active">Rạp/Giá Vé</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <div class="search-box desktop-only">
+        <input type="text" placeholder="Tìm phim, rạp...">
+        <button class="btn-search">
+          🔍
+        </button>
+      </div>
+
+      <a routerLink="/auth/login" class="btn-login desktop-only">Đăng Nhập</a>
+      
+      <a routerLink="/booking" class="btn-book-ticket">Mua Vé Ngay</a>
+      
+      <button class="hamburger mobile-only" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </div>
-</header>
+
+  <div class="mobile-menu" [class.open]="isMobileMenuOpen">
+    <div class="search-box-mobile">
+      <input type="text" placeholder="Tìm kiếm phim...">
+    </div>
+    <ul>
+      <li><a routerLink="/movies" (click)="toggleMobileMenu()">Phim</a></li>
+      <li><a routerLink="/cinemas" (click)="toggleMobileMenu()">Góc Điện Ảnh</a></li>
+      <li><a routerLink="/showtimes" (click)="toggleMobileMenu()">Sự Kiện</a></li>
+      <li><a routerLink="/prices" (click)="toggleMobileMenu()">Rạp/Giá Vé</a></li>
+      <li><a routerLink="/auth/login" (click)="toggleMobileMenu()">Đăng Nhập</a></li>
+    </ul>
+  </div>
+</nav>
