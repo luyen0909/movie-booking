@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Movie } from '../../core/models/movie.model';
 
 @Component({
   selector: 'app-home',
@@ -12,11 +13,23 @@ export class Home {
   
   // Dữ liệu Featured Movies đã được chuyển sang MovieBannerComponent
   
-  bestSellers = [
-    { title: 'Thỏ ơi', image: 'https://cdn.galaxycine.vn/media/2026/2/10/tho-oi-500_1770696594579.jpg', genre: 'Tâm lý, Gia đình', rating: '8.8' },
-    { title: 'Quỷ Nhập Tràng 2', image: 'https://cdn.galaxycine.vn/media/2026/2/26/quy-nhap-trang-2-500_1772097817869.jpg', genre: 'Kinh dị, Bí ẩn', rating: '8.9' },
-    { title: 'Tài', image: 'https://cdn.galaxycine.vn/media/2026/2/27/tai_1772174772211.jpg', genre: 'Tâm lý, Gia đình', rating: '8.0' },
-    { title: 'Cảm Ơn Người Đã Thức Cùng Tôi', image: 'https://cdn.galaxycine.vn/media/2026/2/24/cam-on-nguoi-da-thuc-cung-toi-500_1771925954223.jpg', genre: 'Tìm cảm, Tâm lý, Ca nhạc', rating: '9.1' },
+  bestSellers: Movie[] = [
+    {
+      title: 'Thỏ ơi', image: 'https://cdn.galaxycine.vn/media/2026/2/10/tho-oi-500_1770696594579.jpg', genre: 'Tâm lý, Gia đình', rating: '8.8',
+      isNowShowing: false
+    },
+    {
+      title: 'Quỷ Nhập Tràng 2', image: 'https://cdn.galaxycine.vn/media/2026/2/26/quy-nhap-trang-2-500_1772097817869.jpg', genre: 'Kinh dị, Bí ẩn', rating: '8.9',
+      isNowShowing: false
+    },
+    {
+      title: 'Tài', image: 'https://cdn.galaxycine.vn/media/2026/2/27/tai_1772174772211.jpg', genre: 'Tâm lý, Gia đình', rating: '8.0',
+      isNowShowing: false
+    },
+    {
+      title: 'Cảm Ơn Người Đã Thức Cùng Tôi', image: 'https://cdn.galaxycine.vn/media/2026/2/24/cam-on-nguoi-da-thuc-cung-toi-500_1771925954223.jpg', genre: 'Tìm cảm, Tâm lý, Ca nhạc', rating: '9.1',
+      isNowShowing: false
+    },
   ];
 
   reviews = [
