@@ -1,1 +1,17 @@
-<p>cinema-list works!</p>
+<div class="cinema-list-page container">
+  <div class="page-header">
+    <h1 class="page-title">Hệ Thống Rạp</h1>
+  </div>
+
+  <div class="cinemas-grid">
+    <a class="cinema-card" *ngFor="let cinema of cinemas()" [routerLink]="['/cinemas', cinema.id]">
+      <div class="cinema-logo">
+        <img [src]="cinema.logo" [alt]="cinema.name">
+      </div>
+      <div class="cinema-info">
+        <h3 class="cinema-name">{{ cinema.name }}</h3>
+        <p class="cinema-address">{{ cinema.address }}</p>
+      </div>
+    </a>
+  </div>
+</div>

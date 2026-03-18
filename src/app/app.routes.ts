@@ -6,23 +6,21 @@ import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 
 export const routes: Routes = [
-// ==========================================
-// 1. MAIN LAYOUT (Dành cho Khách & User)
-// Giao diện có Header, Footer chung
-// ==========================================
+
 {
 path: '',
 component: MainLayoutComponent,
 children: [
+
 {
 path: '',
 loadChildren: () => import('./features/home/home-module').then(m => m.HomeModule)
 },
-// Lưu ý: Nếu phần movies của bạn dùng Standalone Component thì dùng loadComponent.
-// Ở đây mình giả định bạn sẽ gom nó thành routes/module.
+
+
 {
 path: 'movies',
-loadComponent: () => import('./features/movies/pages/movie-list/movie-list').then(m => m.MovieList)
+loadChildren: () => import('./features/movies/movies-routing-module').then(m => m.MoviesRoutingModule)
 },
 {
 path: 'cinemas',

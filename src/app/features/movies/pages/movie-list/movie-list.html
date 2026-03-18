@@ -23,10 +23,10 @@
 
     <!-- Grid hiển thị phim (Tái sử dụng cấu trúc Card giống Home) -->
     <div class="movie-grid">
-      <article class="movie-card" *ngFor="let movie of filteredMovies()">
+      <article class="movie-card" *ngFor="let movie of filteredMovies()" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
         <div class="card-image">
           <img [src]="movie.image" [alt]="movie.title">
-          <div class="rating" *ngIf="movie.rating">{{ movie.rating }}</div>
+          <div class="rating" *ngIf="movie.vote">{{ movie.vote }}</div>
           <div class="card-overlay">
             <button class="btn-book">Mua Vé</button>
           </div>
