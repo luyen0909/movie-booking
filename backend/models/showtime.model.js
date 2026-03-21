@@ -7,7 +7,11 @@ const showtimeSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
   basePrice: { type: Number, required: true },
-  bookedSeats: [{ type: String }] // Mảng lưu mã ghế đã bị khách hàng mua (ví dụ: ['A1', 'B2'])
+  bookedSeats: [{ type: String }],  // Mảng lưu mã ghế đã bị khách hàng mua (ví dụ: ['A1', 'B2'])
+  format: { type: String, enum: ['2D', '3D', 'IMAX', '4DX'], default: '2D' },
+  language: { type: String, enum: ['Lồng tiếng', 'Phụ đề', 'Gốc'], default: 'Phụ đề' },
+  status: { type: String, enum: ['scheduled', 'ongoing', 'finished', 'cancelled'], default: 'scheduled' },
+  
 });
 
 module.exports = mongoose.model('Showtime', showtimeSchema);

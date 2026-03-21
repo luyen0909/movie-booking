@@ -52,7 +52,9 @@
               <span class="qb-cinema-addr">{{ c.address }}, {{ c.city }}</span>
             </div>
           </div>
-          <div class="qb-empty" *ngIf="qbCinemas.length === 0">Chọn phim trước</div>
+          <div class="qb-empty" *ngIf="qbCinemasLoading">Đang tải...</div>
+          <div class="qb-empty" *ngIf="!qbCinemasLoading && qbCinemas.length === 0 && selectedMovie">Không có rạp chiếu</div>
+          <div class="qb-empty" *ngIf="!selectedMovie">Chọn phim trước</div>
         </div>
       </div>
 
@@ -72,7 +74,9 @@
           <div class="qb-date-item" *ngFor="let d of qbDates" (click)="selectDate(d)" [class.selected]="d === selectedDate">
             {{ formatDate(d) }}
           </div>
-          <div class="qb-empty" *ngIf="qbDates.length === 0">Chọn rạp trước</div>
+          <div class="qb-empty" *ngIf="qbDatesLoading">Đang tải...</div>
+          <div class="qb-empty" *ngIf="!qbDatesLoading && qbDates.length === 0 && selectedCinema">Không có suất chiếu</div>
+          <div class="qb-empty" *ngIf="!selectedCinema">Chọn rạp trước</div>
         </div>
       </div>
 
@@ -93,7 +97,9 @@
             <span class="qb-st-time">{{ formatTime(st.startTime) }}</span>
             <span class="qb-st-price">{{ st.basePrice | number }}đ</span>
           </div>
-          <div class="qb-empty" *ngIf="qbShowtimes.length === 0">Chọn ngày trước</div>
+          <div class="qb-empty" *ngIf="qbShowtimesLoading">Đang tải...</div>
+          <div class="qb-empty" *ngIf="!qbShowtimesLoading && qbShowtimes.length === 0 && selectedDate">Không có suất chiếu</div>
+          <div class="qb-empty" *ngIf="!selectedDate">Chọn ngày trước</div>
         </div>
       </div>
 
@@ -120,16 +126,16 @@
       <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'now-showing'">
         <article class="movie-card-galaxy" *ngFor="let movie of nowShowingMovies | async">
           <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title">
+            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
             <div class="card-overlay">
-              <button class="btn-buy-ticket">🎟 Mua vé</button>
-              <button class="btn-trailer">▶ Trailer</button>
+              <button class="btn-buy-ticket" >🎟 Mua vé</button>
+              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
             </div>
             <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
             <div class="age-rating">{{ movie.ageRating || 'T18' }}</div>
           </div>
           <div class="card-content">
-            <h3 class="movie-title">{{ movie.title }}</h3>
+            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
           </div>
         </article>
       </div>
@@ -137,16 +143,16 @@
       <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'coming-soon'">
         <article class="movie-card-galaxy" *ngFor="let movie of comingSoonMovies | async">
           <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title">
+            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
             <div class="card-overlay">
-              <button class="btn-buy-ticket">🎟 Mua vé</button>
-              <button class="btn-trailer">▶ Trailer</button>
+              <button class="btn-buy-ticket" >🎟 Mua vé</button>
+              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
             </div>
             <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
             <div class="age-rating">{{ movie.ageRating || 'P' }}</div>
           </div>
           <div class="card-content">
-            <h3 class="movie-title">{{ movie.title }}</h3>
+            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
           </div>
         </article>
       </div>
@@ -155,7 +161,7 @@
     <!-- GÓC ĐIỆN ẢNH Section -->
     <section class="blog-section">
       <div class="section-header-tabs">
-        <h2 class="section-title-blue"><span class="line-blue">|</span> GÓC ĐIỆN ẢNH</h2>
+        <h2 class="section-title-blue"><span class="line-blue">|</span> <a routerLink="/reviews" style="text-decoration: none; color: inherit; cursor: pointer;">GÓC ĐIỆN ẢNH</a></h2>
         <div class="tabs">
           <button class="active">Bình luận phim</button>
           <button>Blog điện ảnh</button>
@@ -184,7 +190,7 @@
     <!-- TIN KHUYẾN MÃI Section -->
     <section class="promo-section" style="margin-bottom: 60px;">
       <div class="section-header-tabs">
-        <h2 class="section-title-blue"><span class="line-blue">|</span> TIN KHUYẾN MÃI</h2>
+        <h2 class="section-title-blue"><span class="line-blue">|</span> <a routerLink="/promotions" style="text-decoration: none; color: inherit; cursor: pointer;">TIN KHUYẾN MÃI</a></h2>
       </div>
       <div class="promo-grid" *ngIf="promotions$ | async as promotions">
         <div class="promo-card" *ngFor="let promo of promotions">

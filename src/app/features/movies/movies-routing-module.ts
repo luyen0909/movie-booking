@@ -3,8 +3,21 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
-    loadComponent: () => import('./pages/movie-list/movie-list').then(m => m.MovieList)
+    path: '', // Mặc định redirect qua now-showing hoặc để /now-showing là trang chính
+    redirectTo: 'now-showing',
+    pathMatch: 'full'
+  },
+  {
+    path: 'now-showing',
+    loadComponent: () => import('./pages/now-showing/now-showing').then(m => m.NowShowing)
+  },
+  {
+    path: 'coming-soon',
+    loadComponent: () => import('./pages/coming-soon/coming-soon').then(m => m.ComingSoon)
+  },
+  {
+    path: 'category/:slug',
+    loadComponent: () => import('./pages/category-movies/category-movies').then(m => m.CategoryMovies)
   },
   // THÊM ĐOẠN NÀY ĐỂ MỞ TRANG CHI TIẾT KHI CÓ ID
   {

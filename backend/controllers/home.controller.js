@@ -2,8 +2,16 @@ const Movie = require('../models/movie.model');
 const Category = require('../models/category.model');
 const Post = require('../models/post.model');
 const Showtime = require('../models/showtime.model');
-const Cinema = require('../models/cinema.model');
+const Cinema = require('../models/cinema.model'); 
 
+exports.getHome = async (req, res) => {
+  try {
+    const movies = await Movie.find({ status: 'now-showing' }).limit(8);
+    res.json(movies);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 // ── QUICK BOOKING ──────────────────────────────────────────────────
 
 // 1. Lấy danh sách phim đang chiếu (cho dropdown Chọn Phim)
@@ -17,6 +25,7 @@ exports.getQuickMovies = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // 2. Lấy danh sách rạp đang chiếu bộ phim đã chọn
 exports.getQuickCinemas = async (req, res) => {

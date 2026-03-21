@@ -1,21 +1,50 @@
-<header style="background-color: #fff; padding: 15px 0; border-bottom: 1px solid #eee;">
-  <div class="container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 15px;">
+<header class="app-header">
+  <div class="header-container">
     
     <!-- LOGO -->
     <a routerLink="/" class="logo">
-      <img routerLink="/" src="/assets/images/logo.png" alt="Movie Booking Logo" style="height: 50px; object-fit: contain;"/>
+      <img src="/assets/images/logo.png" alt="Galaxy Movies" class="logo-img"/>
     </a>
 
     <!-- SEARCH BAR -->
-    <div class="search-bar" style="display: flex; background: #f5f5f5; padding: 8px 15px; border-radius: 20px;">
-      <input type="text" placeholder="Tìm tên phim, rạp..." style="border: none; background: transparent; outline: none; width: 250px;">
-      <button style="border: none; background: transparent; cursor: pointer;">🔍</button>
+    <div class="search-bar">
+      <input type="text" placeholder="Tìm tên phim, rạp..." class="search-input">
+      <button class="search-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
     </div>
 
+    <!-- MAIN NAV -->
+    <nav class="main-nav">
+      <ul class="nav-list">
+        <li class="nav-dropdown">
+          <a class="nav-link">Thể loại</a>
+          <ul class="dropdown-menu">
+            <li><a routerLink="/movies/category/hanh-dong">Hành động</a></li>
+            <li><a routerLink="/movies/category/tinh-cam">Tình cảm</a></li>
+            <li><a routerLink="/movies/category/hai-huoc">Hài hước</a></li>
+            <li><a routerLink="/movies/category/kinh-di">Kinh dị</a></li>
+            <li><a routerLink="/movies/category/khoa-hoc-vien-tuong">Khoa học viễn tưởng</a></li>
+            <li><a routerLink="/movies/category/hoat-hinh">Hoạt hình</a></li>
+          </ul>
+        </li>
+        <li class="nav-dropdown">
+          <a class="nav-link">Phim ▾</a>
+          <ul class="dropdown-menu">
+            <li><a routerLink="/movies/now-showing">Đang chiếu</a></li>
+            <li><a routerLink="/movies/coming-soon">Sắp chiếu</a></li>
+          </ul>
+        </li>
+        <li><a routerLink="/cinemas" class="nav-link">Rạp</a></li>
+        <li><a routerLink="/promotions" class="nav-link">Khuyến mãi</a></li>
+        <li><a routerLink="/reviews" class="nav-link">Tin tức</a></li>
+      </ul>
+    </nav>
+
     <!-- USER ACTIONS -->
-    <div class="user-actions" style="display: flex; align-items: center; gap: 15px;">
-      <a routerLink="/auth/login" style="text-decoration: none; color: #333; font-weight: 600;">Đăng nhập</a>
-      <a routerLink="/auth/register" style="text-decoration: none; background: #f26b38; color: white; padding: 8px 20px; border-radius: 20px; font-weight: 600;">Đăng ký</a>
+    <div class="user-actions">
+      <a routerLink="/auth/login" class="btn-login">Đăng nhập</a>
+      <a routerLink="/auth/register" class="btn-register">Đăng ký</a>
     </div>
   </div> 
 </header>

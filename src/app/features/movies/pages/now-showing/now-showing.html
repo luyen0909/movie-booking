@@ -1,0 +1,51 @@
+<div class="movie-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1 class="page-title">Khám Phá Phim Chiếu Rạp</h1>
+      <p class="page-subtitle">Thế giới điện ảnh trong tầm tay bạn</p>
+
+      <!-- Router Tabs -->
+      <div class="movie-tabs">
+        <a routerLink="/movies/now-showing" routerLinkActive="active" class="tab-pill">Đang Chiếu</a>
+        <a routerLink="/movies/coming-soon" routerLinkActive="active" class="tab-pill">Sắp Chiếu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Movie Grid Section -->
+  <section class="movie-section">
+    <div class="container">
+      <div class="movie-grid">
+        <article class="movie-card" *ngFor="let movie of movies()" [routerLink]="['/movies', movie._id]">
+          <div class="card-image-wrapper">
+            <img [src]="movie.image" [alt]="movie.title" class="card-image">
+            <div class="badges">
+              <span class="badge status status-now">ĐANG CHIẾU</span>
+              <span class="badge age" *ngIf="movie.ageRating">{{ movie.ageRating }}</span>
+            </div>
+            <div class="card-overlay">
+              <button class="btn-book">Mua Vé Ngay</button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <div class="movie-meta">
+              <span class="genre">{{ movie.genre || 'Hành động' }}</span>
+              <div class="rating" *ngIf="movie.vote">
+                <span class="star">★</span>
+                <span class="score">{{ movie.vote }}/10</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="movies().length === 0">
+        <div class="spinner"></div>
+        <p>Đang tải danh sách phim...</p>
+      </div>
+    </div>
+  </section>
+</div>

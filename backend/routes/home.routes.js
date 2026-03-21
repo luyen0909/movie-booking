@@ -8,6 +8,8 @@ router.get('/quick/cinemas/:movieId', homeController.getQuickCinemas);
 router.get('/quick/dates/:movieId/:cinemaId', homeController.getQuickDates);
 router.get('/quick/showtimes/:movieId/:cinemaId/:date', homeController.getQuickShowtimes);
 
+router.get('/home', homeController.getHome);
+
 // GET /api/home/banner (phim nổi bật cho slider trang chủ)
 router.get('/banner', homeController.getBannerMovies);
 

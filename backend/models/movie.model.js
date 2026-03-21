@@ -5,8 +5,7 @@ const movieSchema = new mongoose.Schema({
   image: { type: String, required: true },
   banner: { type: String },
   trailer: { type: String },
-  genre: { type: String, required: true },
-  
+  genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category', index: true }],
   description: String,
   director: String,
   cast: [String],
@@ -17,12 +16,15 @@ const movieSchema = new mongoose.Schema({
   voteCount: Number,
   country: String,
   studio: String,
+  languages: [String],           // Ngôn ngữ: ['Tiếng Việt', 'Phụ đề']
+  subtitles: [String],
+  tags: [String],                // Tag tìm kiếm nhanh
   status: { 
     type: String, 
     enum: ['now-showing', 'coming-soon', 'stopped'], 
     default: 'coming-soon' 
   }
-});
+}, { timestamps: true });
 
 const Movie = mongoose.model('Movie', movieSchema);
 

@@ -29,6 +29,10 @@ export class Home implements OnInit {
   qbDates: string[] = [];
   qbShowtimes: any[] = [];
 
+  qbCinemasLoading = false;
+  qbDatesLoading = false;
+  qbShowtimesLoading = false;
+
   selectedMovie: any = null;
   selectedCinema: any = null;
   selectedDate: string = '';
@@ -71,9 +75,11 @@ export class Home implements OnInit {
     this.qbDates = [];
     this.qbShowtimes = [];
     this.openDropdown = null;
+    this.qbCinemasLoading = true;
 
     this.homeService.getQuickCinemas(movie._id).subscribe(cinemas => {
       this.qbCinemas = cinemas;
+      this.qbCinemasLoading = false;
     });
   }
 
@@ -84,9 +90,11 @@ export class Home implements OnInit {
     this.qbDates = [];
     this.qbShowtimes = [];
     this.openDropdown = null;
+    this.qbDatesLoading = true;
 
     this.homeService.getQuickDates(this.selectedMovie._id, cinema._id).subscribe(dates => {
       this.qbDates = dates;
+      this.qbDatesLoading = false;
     });
   }
 
@@ -95,11 +103,13 @@ export class Home implements OnInit {
     this.selectedShowtime = null;
     this.qbShowtimes = [];
     this.openDropdown = null;
+    this.qbShowtimesLoading = true;
 
     this.homeService.getQuickShowtimes(
       this.selectedMovie._id, this.selectedCinema._id, date
     ).subscribe(showtimes => {
       this.qbShowtimes = showtimes;
+      this.qbShowtimesLoading = false;
     });
   }
 

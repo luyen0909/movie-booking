@@ -1,0 +1,188 @@
+$dark-bg: #1a1a1a;
+$hover-bg: #2d2d2d;
+$primary: #f26b38;
+$text-light: #f5f5f5;
+$text-muted: #a0a0a0;
+
+.app-header {
+  background-color: $dark-bg;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: 'Inter', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  gap: 20px;
+}
+
+// Logo
+.logo-img {
+  height: 40px;
+  object-fit: contain;
+  background: white; // If logo needs white bg
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+// Search Bar
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 20px;
+  flex: 1;
+  max-width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: white;
+    width: 100%;
+    font-size: 0.9rem;
+    
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+
+  .search-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+// Main Navigation
+.main-nav {
+  .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: $text-light;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 0.95rem;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  .nav-dropdown {
+    position: relative;
+    
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #2a2a2a;
+      min-width: 200px;
+      padding: 10px 0;
+      margin: 0;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      list-style: none;
+      
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      li a {
+        display: block;
+        padding: 12px 25px;
+        color: $text-light;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: rgba(#f26b38, 0.1);
+          color: $primary;
+          padding-left: 30px; // Smooth indent animation
+        }
+      }
+    }
+
+    &:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(20px);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        height: 20px;
+        left: 0;
+        right: 0;
+      }
+    }
+  }
+}
+
+// User Actions
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .btn-login {
+    text-decoration: none;
+    color: $text-light;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  .btn-register {
+    text-decoration: none;
+    background: $primary;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(#f26b38, 0.3);
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(#f26b38, 0.5);
+    }
+  }
+}

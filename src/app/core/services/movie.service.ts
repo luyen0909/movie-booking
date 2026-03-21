@@ -21,6 +21,7 @@ trailer: any;
   voteCount: number;
   country: string;
   studio: string;
+  status: string;
 }
 
 @Injectable({
@@ -32,10 +33,25 @@ export class MovieService {
 
   // Lấy danh sách phim đang chiếu
   getNowShowingMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(this.apiUrl).pipe(
+    return this.http.get<Movie[]>(`${this.apiUrl}/now-showing`).pipe(
       catchError(this.handleError<Movie[]>('getNowShowingMovies', []))
     );
   }
+
+  // Lấy danh sách phim sắp chiếu
+  getComingSoonMovies(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`${this.apiUrl}/coming-soon`).pipe(
+      catchError(this.handleError<Movie[]>('getComingSoonMovies', []))
+    );
+  }
+
+  // Lấy danh sách phim theo thể loại
+  getMoviesByCategory(slug: string): Observable<{category: any, movies: Movie[]}> {
+    return this.http.get<{category: any, movies: Movie[]}>(`${this.apiUrl}/category/${slug}`).pipe(
+      catchError(this.handleError<{category: any, movies: Movie[]}>('getMoviesByCategory'))
+    );
+  }
+
   // Lấy chi tiết phim theo ID
   getMovieById(id: string): Observable<Movie | undefined> {
     const url = `${this.apiUrl}/${id}`;
