@@ -25,7 +25,8 @@
       <div class="container slide-content">
         <div class="slide-inner">
           <div class="badge-row">
-            <span class="badge-genre">{{ slide.genre }}</span>
+            <!-- hiện tên thể loại -->
+            <span class="badge-genre">{{ slide.genre.name }}</span>
             <span class="badge-age" *ngIf="slide.ageRating">{{ slide.ageRating }}</span>
           </div>
 

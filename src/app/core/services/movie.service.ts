@@ -10,7 +10,7 @@ trailer: any;
   _id: string; // MongoDB dùng _id
   title: string;
   image: string;
-  genre: string;
+  genre: any;
   description: string;
   director: string;
   cast: string[];
@@ -45,12 +45,13 @@ export class MovieService {
     );
   }
 
-  // Lấy danh sách phim theo thể loại
+  // Lấy danh sách phim theo thể loại (Slug)
   getMoviesByCategory(slug: string): Observable<{category: any, movies: Movie[]}> {
     return this.http.get<{category: any, movies: Movie[]}>(`${this.apiUrl}/category/${slug}`).pipe(
       catchError(this.handleError<{category: any, movies: Movie[]}>('getMoviesByCategory'))
     );
   }
+  
 
   // Lấy chi tiết phim theo ID
   getMovieById(id: string): Observable<Movie | undefined> {
@@ -59,6 +60,7 @@ export class MovieService {
       catchError(this.handleError<Movie>(`getMovieById id=${id}`))
     );
   }
+
 // Tìm kiếm phim theo tiêu đề
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

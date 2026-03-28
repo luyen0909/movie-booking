@@ -1,1 +1,30 @@
-<p>review-list works!</p>
+<div class="reviews-page dark-theme">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">GÓC ĐIỆN ẢNH</h1>
+      <p class="page-subtitle">Tin tức, bình luận và đánh giá các siêu phẩm điện ảnh mới nhất từ giới mộ điệu.</p>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang tải bài viết...</p>
+    </div>
+
+    <div class="news-grid" *ngIf="!isLoading && posts.length > 0">
+      <article class="news-card" *ngFor="let post of posts">
+        <div class="card-image-wrapper">
+          <img [src]="post.image" [alt]="post.title">
+          <div class="post-category">REVIEW</div>
+        </div>
+        <div class="card-content">
+          <h3 class="post-title">{{ post.title }}</h3>
+          <p class="post-preview">{{ post.description || 'Xem chi tiết bài đánh giá cực chất này ngay hôm nay...' }}</p>
+          <div class="post-meta">
+            <span class="date">{{ post.createdAt | date:'dd/MM/yyyy' }}</span>
+            <span class="views">👁 {{ post.likes || 120 }} lượt thích</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>

@@ -3,25 +3,26 @@ import { CommonModule } from '@angular/common';
 import { HomeService } from '../../../../core/services/home.service';
 
 @Component({
-  selector: 'app-review-list',
+  selector: 'app-promotions-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './review-list.html',
-  styleUrl: './review-list.scss'
+  templateUrl: './promotions-list.html',
+  styleUrl: './promotions-list.scss'
 })
-export class ReviewList implements OnInit {
+export class PromotionsList implements OnInit {
   private homeService = inject(HomeService);
   
-  posts: any[] = [];
+  promotions: any[] = [];
   isLoading = true;
 
   ngOnInit() {
-    this.homeService.getPosts().subscribe({
+    this.homeService.getPromotions().subscribe({
       next: (data) => {
-        this.posts = data;
+        this.promotions = data;
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error fetching promotions', err);
         this.isLoading = false;
       }
     });

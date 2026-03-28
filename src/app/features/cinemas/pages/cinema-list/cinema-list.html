@@ -1,17 +1,38 @@
-<div class="cinema-list-page container">
-  <div class="page-header">
-    <h1 class="page-title">Hệ Thống Rạp</h1>
-  </div>
+<div class="cinema-page dark-theme">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">HỆ THỐNG RẠP</h1>
+      <p class="page-subtitle">Khám phá chuỗi rạp chiếu chuẩn quốc tế với công nghệ hình ảnh sắc nét và âm thanh sống động.</p>
+    </div>
 
-  <div class="cinemas-grid">
-    <a class="cinema-card" *ngFor="let cinema of cinemas()" [routerLink]="['/cinemas', cinema.id]">
-      <div class="cinema-logo">
-        <img [src]="cinema.logo" [alt]="cinema.name">
-      </div>
-      <div class="cinema-info">
-        <h3 class="cinema-name">{{ cinema.name }}</h3>
-        <p class="cinema-address">{{ cinema.address }}</p>
-      </div>
-    </a>
+    <div class="cinema-layout">
+      <!-- Sidebar / Region Filters -->
+      <aside class="sidebar">
+        <h3 class="filter-title">KHU VỰC</h3>
+        <ul class="city-list">
+          <li *ngFor="let city of cities" 
+              [class.active]="city === activeCity"
+              (click)="setCity(city)">
+            {{ city }}
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Grid -->
+      <main class="cinema-grid">
+        <article class="cinema-card" *ngFor="let cinema of filteredCinemas">
+          <div class="card-image-wrapper">
+            <img [src]="cinema.img" [alt]="cinema.name">
+            <div class="overlay">
+              <button class="btn-detail">XEM LỊCH CHIẾU</button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h3 class="cinema-name">{{ cinema.name }}</h3>
+            <p class="cinema-address">📍 {{ cinema.address }}</p>
+          </div>
+        </article>
+      </main>
+    </div>
   </div>
 </div>

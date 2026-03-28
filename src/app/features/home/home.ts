@@ -14,9 +14,10 @@ export class Home implements OnInit {
   private homeService = inject(HomeService);
 
   // ── Tabs phim ──────────────────────────────────────────────────
-  activeMovieTab: 'now-showing' | 'coming-soon' = 'now-showing';
+  activeMovieTab: 'now-showing' | 'coming-soon' | 'top-trending' = 'now-showing';
   nowShowingMovies!: Observable<Movie[]>;
   comingSoonMovies!: Observable<Movie[]>;
+  topTrendingMovies!: Observable<Movie[]>;
 
   // ── Posts / Promotions ────────────────────────────────────────
   posts$!: Observable<any[]>;
@@ -44,6 +45,7 @@ export class Home implements OnInit {
   ngOnInit(): void {
     this.nowShowingMovies = this.homeService.getNowShowing();
     this.comingSoonMovies = this.homeService.getComingSoon();
+    this.topTrendingMovies = this.homeService.getTopTrending();
     this.promotions$ = this.homeService.getPromotions();
     this.posts$ = this.homeService.getPosts();
 
@@ -57,7 +59,7 @@ export class Home implements OnInit {
     });
   }
 
-  switchMovieTab(tab: 'now-showing' | 'coming-soon') {
+  switchMovieTab(tab: 'now-showing' | 'coming-soon' | 'top-trending') {
     this.activeMovieTab = tab;
   }
 

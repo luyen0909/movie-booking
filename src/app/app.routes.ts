@@ -23,6 +23,10 @@ path: 'movies',
 loadChildren: () => import('./features/movies/movies-routing-module').then(m => m.MoviesRoutingModule)
 },
 {
+path: 'category',
+loadChildren: () => import('./features/category/category-routing.module').then(m => m.CategoryRoutingModule)
+},
+{
 path: 'cinemas',
 loadChildren: () => import('./features/cinemas/cinemas-module').then(m => m.CinemasModule)
 },
@@ -49,6 +53,10 @@ loadChildren: () => import('./features/search/search-module').then(m => m.Search
 {
 path: 'reviews',
 loadChildren: () => import('./features/reviews/reviews-module').then(m => m.ReviewsModule)
+},
+{
+path: 'promotions',
+loadChildren: () => import('./features/promotions/promotions-module').then(m => m.PromotionsModule)
 }
 ]
 },

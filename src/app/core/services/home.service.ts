@@ -26,6 +26,13 @@ export class HomeService {
     );
   }
 
+  // lấy danh sách phim top trending
+  getTopTrending(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`${this.apiUrl}/top-trending`).pipe(
+      catchError(this.handleError<Movie[]>('getTopTrending', []))
+    );
+  }
+
   // lấy danh sách phim nổi bật cho Banner
   getBannerMovies(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${this.apiUrl}/banner`).pipe(

@@ -22,7 +22,7 @@ const movieSchema = new mongoose.Schema({
   status: { 
     type: String, 
     enum: ['now-showing', 'coming-soon', 'stopped'], 
-    default: 'coming-soon' 
+    default: '' 
   }
 }, { timestamps: true });
 

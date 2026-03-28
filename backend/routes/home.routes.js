@@ -8,7 +8,7 @@ router.get('/quick/cinemas/:movieId', homeController.getQuickCinemas);
 router.get('/quick/dates/:movieId/:cinemaId', homeController.getQuickDates);
 router.get('/quick/showtimes/:movieId/:cinemaId/:date', homeController.getQuickShowtimes);
 
-router.get('/home', homeController.getHome);
+router.get('/', homeController.getHome);
 
 // GET /api/home/banner (phim nổi bật cho slider trang chủ)
 router.get('/banner', homeController.getBannerMovies);
@@ -18,6 +18,9 @@ router.get('/now-showing', homeController.getNowShowing);
 
 // GET /api/home/coming-soon
 router.get('/coming-soon', homeController.getComingSoon);
+
+// GET /api/home/top-trending
+router.get('/top-trending', homeController.getTopTrending);
 
 // GET /api/home/categories
 router.get('/categories', homeController.getCategories);

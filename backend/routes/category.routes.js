@@ -8,4 +8,5 @@ router.get('/', categoryController.getCategories);
 // GET /api/categories/:id
 router.get('/:id', categoryController.getCategoryById);
 
+
 module.exports = router;

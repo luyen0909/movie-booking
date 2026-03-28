@@ -120,6 +120,7 @@
         <div class="tabs">
           <button [class.active]="activeMovieTab === 'now-showing'" (click)="switchMovieTab('now-showing')">Đang chiếu</button>
           <button [class.active]="activeMovieTab === 'coming-soon'" (click)="switchMovieTab('coming-soon')">Sắp chiếu</button>
+          <button [class.active]="activeMovieTab === 'top-trending'" (click)="switchMovieTab('top-trending')">Top Trending</button>
         </div>
       </div>
 
@@ -142,6 +143,23 @@
 
       <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'coming-soon'">
         <article class="movie-card-galaxy" *ngFor="let movie of comingSoonMovies | async">
+          <div class="card-image">
+            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
+            <div class="card-overlay">
+              <button class="btn-buy-ticket" >🎟 Mua vé</button>
+              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
+            </div>
+            <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
+            <div class="age-rating">{{ movie.ageRating || 'P' }}</div>
+          </div>
+          <div class="card-content">
+            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
+          </div>
+        </article>
+      </div>
+
+      <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'top-trending'">
+        <article class="movie-card-galaxy" *ngFor="let movie of topTrendingMovies | async">
           <div class="card-image">
             <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
             <div class="card-overlay">

@@ -5,8 +5,23 @@ import { catchError } from 'rxjs/operators';
 
 // Định nghĩa interface cho Category để dùng chung
 export interface category {
+ banner: any;
+trailer: any;
   _id: string; // MongoDB dùng _id
-  name: string;
+  title: string;
+  image: string;
+  genre: any;
+  description: string;
+  director: string;
+  cast: string[];
+  releaseDate: string;
+  duration: number;
+  ageRating: string;
+  vote: number;
+  voteCount: number;
+  country: string;
+  studio: string;
+  status: string;
 }
 
 @Injectable({
@@ -37,12 +52,12 @@ export class CategoryService {
         catchError(this.handleError<category[]>('searchCategoriesByName', []))
     );
   }
+  
 
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`${operation} failed: ${error.message}`);
       return of(result as T);
-    }
-    }
-    }
+    };
+  }}

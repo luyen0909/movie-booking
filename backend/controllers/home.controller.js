@@ -12,7 +12,6 @@ exports.getHome = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-// ── QUICK BOOKING ──────────────────────────────────────────────────
 
 // 1. Lấy danh sách phim đang chiếu (cho dropdown Chọn Phim)
 exports.getQuickMovies = async (req, res) => {
@@ -48,7 +47,6 @@ exports.getQuickDates = async (req, res) => {
     const showtimes = await Showtime.find({ movieId, cinemaId })
                                     .select('startTime')
                                     .sort({ startTime: 1 });
-    // Lấy unique ngày (YYYY-MM-DD)
     const datesSet = new Set(
       showtimes.map(s => new Date(s.startTime).toISOString().split('T')[0])
     );
@@ -104,6 +102,18 @@ exports.getNowShowing = async (req, res) => {
 exports.getComingSoon = async (req, res) => {
   try {
     const movies = await Movie.find({ status: 'coming-soon' }).limit(8);
+    res.json(movies);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Trả về phim Top Trending cho Trang chủ (Giới hạn 8 phim)
+exports.getTopTrending = async (req, res) => {
+  try {
+    const movies = await Movie.find({ status: 'now-showing' })
+                              .sort({ vote: -1, voteCount: -1 })
+                              .limit(8);
     res.json(movies);
   } catch (err) {
     res.status(500).json({ message: err.message });

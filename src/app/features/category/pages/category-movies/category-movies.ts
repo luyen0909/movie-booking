@@ -16,6 +16,9 @@ export class CategoryMovies {
   private movieService = inject(MovieService);
   private route = inject(ActivatedRoute);
 
+  // Tab lọc trạng thái phim
+  activeTab = signal<'all' | 'now-showing' | 'coming-soon'>('all');
+
   // Lấy data phim và danh mục từ Backend thông qua Slug trên URL
   private categoryData$ = this.route.paramMap.pipe(
     switchMap(params => {
@@ -26,9 +29,6 @@ export class CategoryMovies {
   );
 
   categoryData = toSignal(this.categoryData$);
-
-  // Tab lọc trạng thái phim
-  activeTab = signal<'all' | 'now-showing' | 'coming-soon'>('all');
 
   // Computed Movies list
   movies = computed(() => {

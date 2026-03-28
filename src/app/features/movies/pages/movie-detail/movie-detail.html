@@ -3,11 +3,25 @@
     
     @if (movie(); as movieData) {
       <div class="main-content">
-        <div class="movie-banner" [style.backgroundImage]="'url(' + movieData.image + ')'">
-          <div class="overlay">
-            <button class="play-btn">▶</button>
-          </div>
-        </div>
+
+         <div class="section-block">
+           <div class="trailer-container">
+             @if (isPlayingTrailer() && safeTrailerUrl()) {
+               <iframe 
+                 [src]="safeTrailerUrl()" 
+                 frameborder="0" 
+                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                 allowfullscreen>
+               </iframe>
+             } @else {
+               <div class="movie-banner" [style.backgroundImage]="'url(' + (movieData.banner || movieData.image) + ')'">
+                 <div class="overlay">
+                   <button class="play-btn" (click)="isPlayingTrailer.set(true)">▶</button>
+                 </div>
+               </div>
+             }
+           </div>
+         </div>
 
         <div class="movie-info-section">
           <div class="poster">
@@ -30,7 +44,11 @@
               <li><span class="label">Nhà sản xuất:</span> {{ movieData.studio }}</li>
               <li>
                 <span class="label">Thể loại:</span> 
-                <span class="badge">{{ movieData.genre }}</span>
+                <div class="genre-badges">
+                  @for (g of movieData.genre; track $index) {
+                    <span class="badge">{{ g.name || g }}</span>
+                  }
+                </div>
               </li>
               <li>
                 <span class="label">Đạo diễn:</span> 
@@ -64,19 +82,31 @@
           </div>
 
           <div class="cinema-list">
-            <div class="cinema-card" *ngFor="let cinema of cinemas()">
-              <h3 class="cinema-name">{{ cinema.name }}</h3>
-              <div class="showtime-format" *ngFor="let show of cinema.showtimes">
-                <span class="format-label">{{ show.format }}</span>
-                <div class="time-buttons">
-                  <button class="time-btn" *ngFor="let time of show.times"
-                    [routerLink]="['/booking']"
-                    [queryParams]="{ movieId: movieData._id, cinemaId: cinema.id, date: selectedDate() | date:'yyyy-MM-dd', time: time }">
-                    {{ time }}
-                  </button>
-                </div>
+            @if (isLoadingCinemas()) {
+              <div class="loading-state">
+                <p>Đang tải lịch chiếu...</p>
               </div>
-            </div>
+            } @else {
+              @if (cinemas().length === 0) {
+                <div class="empty-state" style="padding: 20px; color: #a4a4a4;">
+                  Hiện không có suất chiếu nào vào ngày này. Vui lòng chọn ngày khác.
+                </div>
+              } @else {
+                <div class="cinema-card" *ngFor="let cinema of cinemas()">
+                  <h3 class="cinema-name">{{ cinema.name }}</h3>
+                  <div class="showtime-format" *ngFor="let show of cinema.showtimes">
+                    <span class="format-label">{{ show.format }}</span>
+                    <div class="time-buttons">
+                      <button class="time-btn" *ngFor="let st of show.times"
+                        [routerLink]="['/booking/seat-selection']"
+                        [queryParams]="{ movieId: movieData._id, cinemaId: cinema.id, date: selectedDate() | date:'yyyy-MM-dd', time: st.time, showtimeId: st.id }">
+                        {{ st.time }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
           </div>
         </div>
       </div>

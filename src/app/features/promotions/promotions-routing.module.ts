@@ -4,12 +4,12 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./components/review-list/review-list').then(m => m.ReviewList)
+    loadComponent: () => import('./pages/promotions-list/promotions-list').then(m => m.PromotionsList)
   }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class ReviewsRoutingModule {}
+export class PromotionsRoutingModule { }

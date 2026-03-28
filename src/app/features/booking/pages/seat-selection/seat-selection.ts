@@ -1,6 +1,7 @@
 import { Component, computed, signal, input } from '@angular/core';
 import { CommonModule, formatNumber } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { inject } from '@angular/core';
 
 interface Seat {
   id: string; // e.g., 'A1', 'C5'
@@ -15,6 +16,8 @@ interface Seat {
   styleUrl: './seat-selection.scss',
 })
 export class SeatSelection {
+  private router = inject(Router);
+
   // Bước 2.1: Bind trực tiếp query params vào các input của component
   // Tên của các input này phải TRÙNG KHỚP với tên query params bạn gửi đi
   movieId = input<string>();
@@ -94,7 +97,14 @@ export class SeatSelection {
       alert('Vui lòng chọn ít nhất 1 ghế!');
       return;
     }
-    alert(`Bạn đã đặt thành công ${this.selectedSeats().length} ghế.\nGhế đã chọn: ${this.selectedSeats().map(s => s.id).join(', ')}\nTổng tiền: ${formatNumber(this.totalPrice(), 'vi-VN')} VNĐ`);
-    // In a real app, this would navigate to a payment page or show a confirmation modal
+    
+    // Navigate to confirmation page passing the booking state
+    this.router.navigate(['/booking/booking-confirm'], {
+      state: {
+        movieInfo: this.movieInfo(),
+        selectedSeats: this.selectedSeats().map(s => s.id),
+        totalPrice: this.totalPrice()
+      }
+    });
   }
 }
