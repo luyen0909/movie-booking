@@ -1,11 +1,11 @@
-import { Component, computed, signal, input } from '@angular/core';
-import { CommonModule, formatNumber } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { inject } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { Booking, SeatMapResponse, SeatMapSeat } from '../../services/booking';
 
-interface Seat {
-  id: string; // e.g., 'A1', 'C5'
-  status: 'available' | 'selected' | 'occupied';
+interface DisplaySeat extends SeatMapSeat {
+  rowLabel: string;
+  seatNumber: number;
 }
 
 @Component({
@@ -17,94 +17,110 @@ interface Seat {
 })
 export class SeatSelection {
   private router = inject(Router);
+  private bookingService = inject(Booking);
 
-  // Bước 2.1: Bind trực tiếp query params vào các input của component
-  // Tên của các input này phải TRÙNG KHỚP với tên query params bạn gửi đi
   movieId = input<string>();
   cinemaId = input<string>();
   date = input<string>();
   time = input<string>();
   room = input<string>();
+  showtimeId = input<string>();
 
-  // Bước 2.2: Biến movieInfo thành một computed signal
-  // Nó sẽ tự động tính toán lại khi bất kỳ input nào ở trên thay đổi
-  movieInfo = computed(() => {
-    // Trong ứng dụng thực tế, bạn sẽ dùng movieId() và cinemaId() để gọi service lấy dữ liệu
-    // Ở đây, chúng ta sẽ giả lập việc đó để hiển thị thông tin từ URL
-    const movieTitles: { [key: string]: string } = {
-      '1': 'Dune: Hành Tinh Cát 2',
-      '2': 'Godzilla x Kong',
-    };
-    const cinemaNames: { [key: string]: string } = {
-      '1': 'Galaxy Nguyễn Du',
-      '2': 'Galaxy Kinh Dương Vương',
-      '3': 'CGV Hùng Vương Plaza',
-    };
+  readonly seatMap = signal<SeatMapResponse | null>(null);
+  readonly loading = signal<boolean>(true);
+  readonly errorMessage = signal<string>('');
+  readonly selectedSeatIds = signal<string[]>([]);
 
+  readonly seats = computed<DisplaySeat[][]>(() => {
+    const seatMap = this.seatMap();
+    if (!seatMap) return [];
+
+    const grouped = new Map<string, DisplaySeat[]>();
+
+    seatMap.seats.forEach(seat => {
+      const rowLabel = seat.id.charAt(0);
+      const seatNumber = Number(seat.id.slice(1));
+      const status = this.selectedSeatIds().includes(seat.id) ? 'selected' : seat.status;
+
+      if (!grouped.has(rowLabel)) grouped.set(rowLabel, []);
+      grouped.get(rowLabel)?.push({ ...seat, rowLabel, seatNumber, status });
+    });
+
+    return Array.from(grouped.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, rowSeats]) => rowSeats.sort((a, b) => a.seatNumber - b.seatNumber));
+  });
+
+  readonly movieInfo = computed(() => {
+    const seatMap = this.seatMap();
     return {
-      title: movieTitles[this.movieId() ?? ''] || 'Unknown Movie',
-      cinema: cinemaNames[this.cinemaId() ?? ''] || 'Unknown Cinema',
-      showtime: `${this.time() || 'N/A'} - ${this.date() || 'N/A'}`,
-      room: this.room() || 'N/A',
+      title: seatMap?.movie?.title || 'Đang cập nhật',
+      cinema: seatMap?.cinema?.name || 'Đang cập nhật',
+      room: seatMap?.room?.name || this.room() || 'Đang cập nhật',
+      showtime: seatMap?.showtime?.startTime
+        ? new Date(seatMap.showtime.startTime).toLocaleString('vi-VN')
+        : `${this.time() || 'N/A'} - ${this.date() || 'N/A'}`,
+      showtimeId: seatMap?.showtime?.id || this.showtimeId() || '',
     };
   });
-  
-  seatPrice = 75000; // 75,000 VND
 
-  // Generate a grid of seats
-  rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-  cols = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  
-  // Use a signal to manage the state of all seats
-  seats = signal<Seat[][]>(
-    this.rows.map(row => 
-      this.cols.map(col => ({
-        id: `${row}${col}`,
-        // Randomly mark some seats as occupied
-        status: Math.random() > 0.7 ? 'occupied' : 'available'
-      }))
-    )
+  readonly selectedSeats = computed(() =>
+    this.seatMap()?.seats.filter(seat => this.selectedSeatIds().includes(seat.id)) ?? []
   );
 
-  // Computed signal to get the list of selected seats
-  selectedSeats = computed(() => 
-    this.seats().flat().filter(seat => seat.status === 'selected')
+  readonly totalPrice = computed(() =>
+    this.selectedSeats().reduce((sum, seat) => sum + seat.price, 0)
   );
 
-  // Computed signal to calculate the total price
-  totalPrice = computed(() => this.selectedSeats().length * this.seatPrice);
+  readonly selectedSeatLabel = computed(() => this.selectedSeatIds().join(', '));
 
-  toggleSeat(seat: Seat) {
-    if (seat.status === 'occupied') {
-      return; // Cannot select occupied seats
-    }
+  constructor() {
+    effect(() => {
+      const showtimeId = this.showtimeId();
+      if (showtimeId) {
+        this.loadSeatMap(showtimeId);
+      }
+    });
+  }
 
-    // Create a deep copy of the seats to update the signal
-    const updatedSeats = this.seats().map(row => row.map(s => ({...s})));
-    
-    const seatToUpdate = updatedSeats
-      .flat()
-      .find(s => s.id === seat.id);
+  loadSeatMap(showtimeId: string) {
+    this.loading.set(true);
+    this.errorMessage.set('');
+    this.selectedSeatIds.set([]);
 
-    if (seatToUpdate) {
-      seatToUpdate.status = seatToUpdate.status === 'available' ? 'selected' : 'available';
-      this.seats.set(updatedSeats);
-    }
+    this.bookingService.getSeatMap(showtimeId).subscribe({
+      next: (data) => {
+        this.seatMap.set(data);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        this.errorMessage.set(error.error?.message || 'Không thể tải sơ đồ ghế.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  toggleSeat(seat: DisplaySeat) {
+    if (seat.status === 'occupied' || seat.status === 'maintenance') return;
+
+    const current = this.selectedSeatIds();
+    this.selectedSeatIds.set(
+      current.includes(seat.id)
+        ? current.filter(id => id !== seat.id)
+        : [...current, seat.id],
+    );
   }
 
   bookSeats() {
-    if (this.selectedSeats().length === 0) {
-      alert('Vui lòng chọn ít nhất 1 ghế!');
-      return;
-    }
-    
-    // Navigate to confirmation page passing the booking state
+    if (this.selectedSeatIds().length === 0 || !this.movieInfo().showtimeId) return;
+
     this.router.navigate(['/booking/booking-confirm'], {
       state: {
         movieInfo: this.movieInfo(),
-        selectedSeats: this.selectedSeats().map(s => s.id),
-        totalPrice: this.totalPrice()
-      }
+        selectedSeats: this.selectedSeatIds(),
+        totalPrice: this.totalPrice(),
+        showtimeId: this.movieInfo().showtimeId,
+      },
     });
   }
 }

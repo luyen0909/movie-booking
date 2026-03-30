@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  slug: { type: String, required: true },
   image: { type: String, required: true },
   banner: { type: String },
   trailer: { type: String },
@@ -10,7 +11,7 @@ const movieSchema = new mongoose.Schema({
   director: String,
   cast: [String],
   releaseDate: Date,
-  duration: Number, // tính bằng phút
+  duration: Number,
   ageRating: String,
   vote: Number,
   voteCount: Number,

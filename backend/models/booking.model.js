@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   showtimeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Showtime', required: true },
   movieId: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie' },    
   cinemaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cinema' },  

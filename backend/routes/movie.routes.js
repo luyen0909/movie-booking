@@ -14,7 +14,10 @@ router.get('/coming-soon', movieController.getComingSoon);
 // GET /api/movies/category/:slug
 router.get('/category/:slug', movieController.getMoviesByCategorySlug);
 
-// GET /api/movies/:id
-router.get('/:id', movieController.getMovieDetail);
+// GET /api/movies/search/:keyword
+router.get('/search/:keyword', movieController.searchMovies);
+
+// GET /api/movies/:slug
+router.get('/:slug', movieController.getMovieDetail);
 
 module.exports = router;

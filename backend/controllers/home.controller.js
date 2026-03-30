@@ -3,10 +3,11 @@ const Category = require('../models/category.model');
 const Post = require('../models/post.model');
 const Showtime = require('../models/showtime.model');
 const Cinema = require('../models/cinema.model'); 
+const Booking = require('../models/booking.model');
 
 exports.getHome = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing' }).limit(8);
+    const movies = await Movie.find({ status: 'now-showing' }).limit(5);
     res.json(movies);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -88,7 +89,7 @@ exports.getBannerMovies = async (req, res) => {
   }
 };
 
-// Trả về phim Đang chiếu cho Trang chủ (Giới hạn 8 phim)
+// Trả về phim Đang chiếu cho Trang chủ (Giới hạn 5 phim)
 exports.getNowShowing = async (req, res) => {
   try {
     const movies = await Movie.find({ status: 'now-showing' }).limit(8);
@@ -98,7 +99,7 @@ exports.getNowShowing = async (req, res) => {
   }
 };
 
-// Trả về phim Sắp chiếu cho Trang chủ (Giới hạn 8 phim)
+// Trả về phim Sắp chiếu cho Trang chủ (Giới hạn 5 phim)
 exports.getComingSoon = async (req, res) => {
   try {
     const movies = await Movie.find({ status: 'coming-soon' }).limit(8);
@@ -108,13 +109,59 @@ exports.getComingSoon = async (req, res) => {
   }
 };
 
-// Trả về phim Top Trending cho Trang chủ (Giới hạn 8 phim)
+// Trả về phim Top Trending cho Trang chủ (Giới hạn 5 phim)
 exports.getTopTrending = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing' })
-                              .sort({ vote: -1, voteCount: -1 })
-                              .limit(8);
-    res.json(movies);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // 1. Thống kê số lượng vé bán ra trong 7 ngày qua cho từng phim (chỉ tính giao dịch thành công)
+    const trendingData = await Booking.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: sevenDaysAgo },
+          paymentStatus: 'success'
+        }
+      },
+      {
+        $group: {
+          _id: "$movieId",
+          ticketsSold: { $sum: { $size: { $ifNull: ["$seats", []] } } }
+        }
+      }
+    ]);
+
+    // 2. Lấy tất cả phim đang chiếu
+    const nowShowingMovies = await Movie.find({ status: 'now-showing' });
+
+    // 3. Map dữ liệu vé bán với phim
+    const ticketsMap = {};
+    trendingData.forEach(item => {
+      if (item._id) {
+        ticketsMap[item._id.toString()] = item.ticketsSold;
+      }
+    });
+
+    const moviesWithStats = nowShowingMovies.map(movie => {
+      return {
+        ...movie.toObject(),
+        ticketsSold: ticketsMap[movie._id.toString()] || 0
+      };
+    });
+
+    // 4. Sắp xếp: Ưu tiên vé bán ra (thực tế thị trường), sau đó đến vote và voteCount
+    moviesWithStats.sort((a, b) => {
+      if (b.ticketsSold !== a.ticketsSold) {
+        return b.ticketsSold - a.ticketsSold;
+      }
+      if (b.vote !== a.vote) {
+        return b.vote - a.vote;
+      }
+      return b.voteCount - a.voteCount;
+    });
+
+    // 5. Trả về 5 phim đầu tiên (Top 5 Trending)
+    res.json(moviesWithStats.slice(0, 5));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -154,3 +201,4 @@ exports.getPromotions = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+

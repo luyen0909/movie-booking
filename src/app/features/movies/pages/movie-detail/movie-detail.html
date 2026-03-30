@@ -73,11 +73,11 @@
           <h2 class="section-title">Lịch Chiếu</h2>
           
           <div class="date-tabs">
-            <button class="date-btn" *ngFor="let date of nextDays; let i = index" 
-              [class.active]="date.getDate() === selectedDate().getDate()"
-              (click)="selectDate(date)">
-              <span class="day">{{ i === 0 ? 'Hôm Nay' : (date | date:'EEEE') }}</span>
-              <span class="date">{{ date | date:'dd/MM' }}</span>
+            <button class="date-btn" *ngFor="let date of availableDates(); let i = index"
+              [class.active]="date.value === selectedDate()"
+              (click)="selectDate(date.value)">
+              <span class="day">{{ i === 0 ? 'Hôm Nay' : 'Ngày chiếu' }}</span>
+              <span class="date">{{ date.label }}</span>
             </button>
           </div>
 
@@ -99,7 +99,7 @@
                     <div class="time-buttons">
                       <button class="time-btn" *ngFor="let st of show.times"
                         [routerLink]="['/booking/seat-selection']"
-                        [queryParams]="{ movieId: movieData._id, cinemaId: cinema.id, date: selectedDate() | date:'yyyy-MM-dd', time: st.time, showtimeId: st.id }">
+                        [queryParams]="{ movieId: movieData._id, cinemaId: cinema.id, date: selectedDate(), time: st.time, showtimeId: st.id }">
                         {{ st.time }}
                       </button>
                     </div>
@@ -119,7 +119,7 @@
     <aside class="sidebar">
       <h2 class="section-title">PHIM ĐANG CHIẾU</h2>
       <div class="sidebar-movie-list">
-        <div class="side-movie-card" *ngFor="let sm of sidebarMovies()" [routerLink]="['/movies', sm._id]">
+        <div class="side-movie-card" *ngFor="let sm of sidebarMovies()" [routerLink]="['/movies', sm.slug]">
           <img [src]="sm.image" [alt]="sm.title">
           <div class="card-overlay">
             <h4 class="sm-title">{{ sm.title }}</h4>

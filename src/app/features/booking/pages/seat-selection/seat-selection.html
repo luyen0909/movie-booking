@@ -41,7 +41,7 @@
       <div class="summary-item">
         <h4>Ghế đã chọn ({{ selectedSeats().length }})</h4>
         <p class="selected-seats-list">
-          {{ selectedSeats().length > 0 ? selectedSeats().map(s => s.id).join(', ') : 'Chưa chọn ghế' }}
+          {{ selectedSeats().length > 0 ? selectedSeatIds() : 'Chưa chọn ghế' }}
         </p>
       </div>
       <div class="summary-item total">

@@ -570,6 +570,7 @@
           font-weight: 500;
           line-height: 1.4;
           display: -webkit-box;
+          line-clamp: 2;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
@@ -642,6 +643,153 @@
     &:hover {
       img { transform: scale(1.03); }
       .promo-title { color: var(--orange-primary); }
+    }
+  }
+}
+
+// ══ HOME MAIN LAYOUT: 2 cột (phim + sidebar) ══════════════════
+.home-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 32px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+// ══ TRENDING WIDGET SIDEBAR ════════════════════════════════════
+.trending-widget {
+  position: sticky;
+  top: 80px; // dính theo khi cuộn (nếu navbar cố định)
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(242, 107, 56, 0.2);
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  margin-top: 60px; // căn bằng với tiêu đề PHIM bên trái
+
+  // Header
+  .tw-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #1a0800 0%, #2d1200 100%);
+    border-bottom: 1px solid rgba(242, 107, 56, 0.25);
+
+    .tw-fire {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .tw-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #f26b38;
+      text-transform: uppercase;
+    }
+  }
+
+  // Danh sách phim
+  .tw-list {
+    padding: 8px 0;
+  }
+
+  // Mỗi item
+  .tw-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+
+    &:last-child { border-bottom: none; }
+
+    &:hover {
+      background: rgba(242, 107, 56, 0.07);
+    }
+
+    // Top 1 — nền nhẹ vàng
+    &.tw-top1 {
+      background: rgba(255, 215, 0, 0.04);
+      &:hover { background: rgba(255, 215, 0, 0.09); }
+    }
+
+    // Số thứ hạng
+    .tw-rank {
+      font-size: 18px;
+      font-weight: 900;
+      min-width: 22px;
+      text-align: center;
+      color: rgba(128, 128, 128, 0.35);
+      font-family: 'Georgia', serif;
+      flex-shrink: 0;
+
+      &.tw-rank-gold {
+        background: linear-gradient(180deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      &.tw-rank-silver {
+        background: linear-gradient(180deg, #C0C0C0, #909090);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      &.tw-rank-bronze {
+        background: linear-gradient(180deg, #CD7F32, #9a5a1a);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    // Poster nhỏ
+    .tw-poster {
+      width: 40px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 5px;
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+
+    &:hover .tw-poster {
+      transform: scale(1.05);
+    }
+
+    // Info
+    .tw-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .tw-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin: 0;
+        overflow: hidden;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.4;
+      }
+
+      .tw-score {
+        font-size: 11px;
+        font-weight: 600;
+        color: #f5c518;
+      }
     }
   }
 }

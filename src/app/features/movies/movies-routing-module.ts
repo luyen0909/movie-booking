@@ -17,7 +17,7 @@ const routes: Routes = [
   },
   // THÊM ĐOẠN NÀY ĐỂ MỞ TRANG CHI TIẾT KHI CÓ ID
   {
-    path: ':id',
+    path: ':slug',
     loadComponent: () => import('./pages/movie-detail/movie-detail').then(m => m.MovieDetail)
   }
 ];

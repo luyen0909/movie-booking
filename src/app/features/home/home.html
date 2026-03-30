@@ -110,71 +110,91 @@
       </button>
     </div>
   </div>
+  <div class="container dark-container">
+    <!-- Layout: Phim (trái) + Trending Sidebar (phải) -->
+    <div class="home-main-layout">
+
+      <!-- ── PHIM Section (chiếm phần lớn) ─────────────────── -->
+      <section class="movie-section-tabs">
+        <div class="section-header-tabs">
+          <h2 class="section-title-blue"><span class="line-blue">|</span> PHIM</h2>
+          <div class="tabs">
+            <button [class.active]="activeMovieTab === 'now-showing'" (click)="switchMovieTab('now-showing')">Đang chiếu</button>
+            <button [class.active]="activeMovieTab === 'coming-soon'" (click)="switchMovieTab('coming-soon')">Sắp chiếu</button>
+          </div>
+        </div>
+
+        <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'now-showing'">
+          <article class="movie-card-galaxy" *ngFor="let movie of nowShowingMovies | async">
+            <div class="card-image">
+              <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie.slug]" style="cursor: pointer;">
+              <div class="card-overlay">
+                <button class="btn-buy-ticket" >🎟 Mua vé</button>
+                <button class="btn-trailer" [routerLink]="['/movies', movie.slug]">▶ Trailer</button>
+              </div>
+              <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
+              <div class="age-rating">{{ movie.ageRating || 'T18' }}</div>
+            </div>
+            <div class="card-content">
+              <h3 class="movie-title" [routerLink]="['/movies', movie.slug]" style="cursor: pointer;">{{ movie.title }}</h3>
+            </div>
+          </article>
+        </div>
+
+        <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'coming-soon'">
+          <article class="movie-card-galaxy" *ngFor="let movie of comingSoonMovies | async">
+            <div class="card-image">
+              <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie.slug]" style="cursor: pointer;">
+              <div class="card-overlay">
+                <button class="btn-buy-ticket" >🎟 Mua vé</button>
+                <button class="btn-trailer" [routerLink]="['/movies', movie.slug]">▶ Trailer</button>
+              </div>
+              <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
+              <div class="age-rating">{{ movie.ageRating || 'P' }}</div>
+            </div>
+            <div class="card-content">
+              <h3 class="movie-title" [routerLink]="['/movies', movie.slug]" style="cursor: pointer;">{{ movie.title }}</h3>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── TOP TRENDING Sidebar Widget ───────────────────── -->
+      <aside class="trending-widget" *ngIf="topTrendingMovies | async as trendList">
+        <div class="tw-header">
+          <span class="tw-fire">🔥</span>
+          <span class="tw-title">TOP 5 TUẦN NÀY</span>
+        </div>
+
+        <div class="tw-list">
+          <a class="tw-item" *ngFor="let movie of trendList; let i = index"
+             [routerLink]="['/movies', movie.slug]"
+             [class.tw-top1]="i === 0">
+
+            <!-- Rank number -->
+            <span class="tw-rank" [class.tw-rank-gold]="i === 0"
+                                  [class.tw-rank-silver]="i === 1"
+                                  [class.tw-rank-bronze]="i === 2">
+              {{ i + 1 }}
+            </span>
+
+            <!-- Poster nhỏ -->
+            <img class="tw-poster" [src]="movie.image" [alt]="movie.title">
+
+            <!-- Info -->
+            <div class="tw-info">
+              <p class="tw-name">{{ movie.title }}</p>
+              <span class="tw-score" *ngIf="movie.vote">★ {{ movie.vote }}</span>
+            </div>
+          </a>
+        </div>
+      </aside>
+
+    </div><!-- end home-main-layout -->
+
+  </div><!-- end dark-container -->
 
   <div class="container dark-container">
-
-    <!-- PHIM Section -->
-    <section class="movie-section-tabs">
-      <div class="section-header-tabs">
-        <h2 class="section-title-blue"><span class="line-blue">|</span> PHIM</h2>
-        <div class="tabs">
-          <button [class.active]="activeMovieTab === 'now-showing'" (click)="switchMovieTab('now-showing')">Đang chiếu</button>
-          <button [class.active]="activeMovieTab === 'coming-soon'" (click)="switchMovieTab('coming-soon')">Sắp chiếu</button>
-          <button [class.active]="activeMovieTab === 'top-trending'" (click)="switchMovieTab('top-trending')">Top Trending</button>
-        </div>
-      </div>
-
-      <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'now-showing'">
-        <article class="movie-card-galaxy" *ngFor="let movie of nowShowingMovies | async">
-          <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
-            <div class="card-overlay">
-              <button class="btn-buy-ticket" >🎟 Mua vé</button>
-              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
-            </div>
-            <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
-            <div class="age-rating">{{ movie.ageRating || 'T18' }}</div>
-          </div>
-          <div class="card-content">
-            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
-          </div>
-        </article>
-      </div>
-
-      <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'coming-soon'">
-        <article class="movie-card-galaxy" *ngFor="let movie of comingSoonMovies | async">
-          <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
-            <div class="card-overlay">
-              <button class="btn-buy-ticket" >🎟 Mua vé</button>
-              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
-            </div>
-            <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
-            <div class="age-rating">{{ movie.ageRating || 'P' }}</div>
-          </div>
-          <div class="card-content">
-            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
-          </div>
-        </article>
-      </div>
-
-      <div class="movie-grid-galaxy" *ngIf="activeMovieTab === 'top-trending'">
-        <article class="movie-card-galaxy" *ngFor="let movie of topTrendingMovies | async">
-          <div class="card-image">
-            <img [src]="movie.image" [alt]="movie.title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">
-            <div class="card-overlay">
-              <button class="btn-buy-ticket" >🎟 Mua vé</button>
-              <button class="btn-trailer" [routerLink]="['/movies', movie._id]">▶ Trailer</button>
-            </div>
-            <div class="star-rating" *ngIf="movie.vote">{{ movie.vote }}</div>
-            <div class="age-rating">{{ movie.ageRating || 'P' }}</div>
-          </div>
-          <div class="card-content">
-            <h3 class="movie-title" [routerLink]="['/movies', movie._id]" style="cursor: pointer;">{{ movie.title }}</h3>
-          </div>
-        </article>
-      </div>
-    </section>
 
     <!-- GÓC ĐIỆN ẢNH Section -->
     <section class="blog-section">

@@ -1,8 +1,9 @@
 <div class="promotions-page dark-theme">
   <div class="container">
     <div class="page-header">
-      <h1 class="page-title">CHƯƠNG TRÌNH KHUYẾN MÃI</h1>
-      <p class="page-subtitle">Cập nhật ngay những ưu đãi mới nhất từ rạp chiếu phim để không bỏ lỡ bất kỳ suất chiếu đỉnh cao nào!</p>
+      <p class="eyebrow">ƯU ĐÃI ĐANG DIỄN RA</p>
+      <h1 class="page-title">Khuyến mãi nổi bật tại rạp</h1>
+      <p class="page-subtitle">Tổng hợp voucher, combo và quyền lợi thành viên để Đức Vua đặt vé tiết kiệm hơn mỗi tuần.</p>
     </div>
 
     <div *ngIf="isLoading" class="loading-state">
@@ -15,16 +16,16 @@
     </div>
 
     <div class="promo-grid" *ngIf="!isLoading && promotions.length > 0">
-      <article class="promo-card" *ngFor="let promo of promotions">
+      <article class="promo-card" *ngFor="let promo of promotions; let i = index">
         <div class="card-image-wrapper">
           <img [src]="promo.image" [alt]="promo.title">
-          <div class="overlay">
-            <button class="btn-detail">XEM CHI TIẾT</button>
-          </div>
+          <div class="promo-badge">{{ i === 0 ? 'HOT' : 'ƯU ĐÃI' }}</div>
         </div>
         <div class="card-content">
+          <p class="promo-meta">🎟 {{ promo.views || 0 }} lượt xem • ❤️ {{ promo.likes || 0 }}</p>
           <h3 class="promo-title">{{ promo.title }}</h3>
-          <p class="promo-desc" *ngIf="promo.description">{{ promo.description }}</p>
+          <p class="promo-desc">{{ promo.content }}</p>
+          <button class="btn-detail">ÁP DỤNG NGAY</button>
         </div>
       </article>
     </div>

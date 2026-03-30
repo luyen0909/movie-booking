@@ -9,13 +9,18 @@ import { switchMap } from 'rxjs';
 
 interface Showtime {
   format: string;
-  times: { id: string, time: string }[];
+  times: { id: string; time: string }[];
 }
 
 interface CinemaShow {
   id: string;
   name: string;
   showtimes: Showtime[];
+}
+
+interface DateOption {
+  value: string;
+  label: string;
 }
 
 @Component({
@@ -26,21 +31,18 @@ interface CinemaShow {
   styleUrl: './movie-detail.scss',
 })
 export class MovieDetail implements OnInit {
-  
   private movieService = inject(MovieService);
   private homeService = inject(HomeService);
   private sanitizer = inject(DomSanitizer);
-  id = input.required<string>();
+  slug = input.required<string>();
 
-  // Convert the movie observable to a signal
-  private movie$ = toObservable(this.id).pipe(switchMap(id => this.movieService.getMovieById(id)));
+  private movie$ = toObservable(this.slug).pipe(switchMap(slug => this.movieService.getMovieBySlug(slug)));
   movie = toSignal(this.movie$, {
-    initialValue: null
+    initialValue: null,
   });
 
   isPlayingTrailer = signal(false);
 
-  // Chuyển đổi link YouTube sang URL an toàn để nhúng vào iframe
   safeTrailerUrl = computed<SafeResourceUrl | null>(() => {
     const movieData = this.movie();
     if (!movieData || !movieData.trailer) return null;
@@ -48,7 +50,6 @@ export class MovieDetail implements OnInit {
     let videoId = '';
     const url = movieData.trailer;
 
-    // Các regex để lấy ID từ các loại link YouTube phổ biến
     const standardMatch = url.match(/v=([^&]+)/);
     const shortMatch = url.match(/youtu\.be\/([^?]+)/);
     const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
@@ -56,10 +57,9 @@ export class MovieDetail implements OnInit {
     if (standardMatch) videoId = standardMatch[1];
     else if (shortMatch) videoId = shortMatch[1];
     else if (embedMatch) videoId = embedMatch[1];
-    else videoId = url; // Giả sử nếu ko khớp regex thì bản thân nó là ID
+    else videoId = url;
 
     if (videoId) {
-      // Thêm autoplay=1 nếu đang trong trạng thái phát
       const autoplay = this.isPlayingTrailer() ? '?autoplay=1' : '';
       const embedUrl = `https://www.youtube.com/embed/${videoId}${autoplay}`;
       return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
@@ -68,56 +68,89 @@ export class MovieDetail implements OnInit {
     return null;
   });
 
-
-  
-  // Fetch the list of now showing movies for the sidebar
   private nowShowingMovies = toSignal(this.movieService.getNowShowingMovies(), { initialValue: [] });
 
-  // Dữ liệu cột phải (Phim đang chiếu)
   sidebarMovies = computed(() => {
-    // Lấy tối đa 3 phim đang chiếu từ the signal
     return this.nowShowingMovies().slice(0, 3).map((m: Movie) => ({
       ...m,
-      age: m.ageRating || 'T18' // Dữ liệu giả lập nhãn tuổi
+      age: m.ageRating || 'T18',
     }));
   });
 
-  // Quản lý ngày
-  selectedDate = signal<Date>(new Date());
-  nextDays = Array.from({ length: 5 }).map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    return d;
-  });
-
-  // Dữ liệu rạp
+  selectedDate = signal<string>('');
+  availableDates = signal<DateOption[]>([]);
   cinemas = signal<CinemaShow[]>([]);
   isLoadingCinemas = signal<boolean>(false);
 
   constructor() {
-    // Gọi API mỗi khi movie hoặc selectedDate đổi
     effect(() => {
-      const m = this.movie();
-      const d = this.selectedDate();
-      if (m && m._id && d) {
-        this.loadShowtimes(m._id, d);
+      const movie = this.movie();
+      if (movie?._id) {
+        this.loadAvailableDates(movie._id, this.selectedDate());
       }
     }, { allowSignalWrites: true });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  loadShowtimes(movieId: string, date: Date) {
-    this.isLoadingCinemas.set(true);
-    // Convert local date to YYYY-MM-DD avoiding UTC offset issues
-    const offset = date.getTimezoneOffset()
-    const localeDate = new Date(date.getTime() - (offset*60*1000))
-    const dateStr = localeDate.toISOString().split('T')[0];
-
+  loadAvailableDates(movieId: string, preferredDate?: string) {
     this.homeService.getQuickCinemas(movieId).subscribe({
       next: (cinemasData: any[]) => {
-        if (!cinemasData || !cinemasData.length) {
+        if (!cinemasData?.length) {
+          this.availableDates.set([]);
+          this.cinemas.set([]);
+          this.isLoadingCinemas.set(false);
+          return;
+        }
+
+        const primaryCinemaId = cinemasData[0]._id;
+        this.homeService.getQuickDates(movieId, primaryCinemaId).subscribe({
+          next: (dates: string[]) => {
+            const mappedDates = dates.map(date => ({
+              value: date,
+              label: new Date(`${date}T00:00:00`).toLocaleDateString('vi-VN', {
+                weekday: 'short',
+                day: '2-digit',
+                month: '2-digit',
+              }),
+            }));
+
+            this.availableDates.set(mappedDates);
+
+            const chosenDate = preferredDate && dates.includes(preferredDate)
+              ? preferredDate
+              : dates[0] ?? '';
+
+            if (chosenDate) {
+              this.selectedDate.set(chosenDate);
+              this.loadShowtimes(movieId, chosenDate, cinemasData);
+            } else {
+              this.cinemas.set([]);
+            }
+          },
+          error: () => {
+            this.availableDates.set([]);
+            this.cinemas.set([]);
+          },
+        });
+      },
+      error: () => {
+        this.availableDates.set([]);
+        this.cinemas.set([]);
+      },
+    });
+  }
+
+  loadShowtimes(movieId: string, dateStr: string, cinemasData?: any[]) {
+    this.isLoadingCinemas.set(true);
+
+    const loadCinemas = cinemasData
+      ? { subscribe: (observer: any) => observer.next(cinemasData) }
+      : this.homeService.getQuickCinemas(movieId);
+
+    loadCinemas.subscribe({
+      next: (cinemas: any[]) => {
+        if (!cinemas?.length) {
           this.cinemas.set([]);
           this.isLoadingCinemas.set(false);
           return;
@@ -126,50 +159,55 @@ export class MovieDetail implements OnInit {
         let loadedCount = 0;
         const resultCinemas: CinemaShow[] = [];
 
-        cinemasData.forEach(c => {
-          this.homeService.getQuickShowtimes(movieId, c._id, dateStr).subscribe({
-            next: (stData: any[]) => {
-              if (stData && stData.length > 0) {
-                const times = stData.map(st => {
-                   const d = new Date(st.startTime);
-                   return {
-                     id: st._id,
-                     time: d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-                   };
-                });
-                
+        cinemas.forEach(cinema => {
+          this.homeService.getQuickShowtimes(movieId, cinema._id, dateStr).subscribe({
+            next: (showtimes: any[]) => {
+              if (showtimes?.length) {
                 resultCinemas.push({
-                   id: c._id,
-                   name: c.name,
-                   showtimes: [{ format: 'Phim 2D', times: times }]
+                  id: cinema._id,
+                  name: cinema.name,
+                  showtimes: [{
+                    format: 'Phim 2D',
+                    times: showtimes.map(showtime => ({
+                      id: showtime._id,
+                      time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }),
+                    })),
+                  }],
                 });
               }
-              
+
               loadedCount++;
-              if (loadedCount === cinemasData.length) {
+              if (loadedCount === cinemas.length) {
                 this.cinemas.set(resultCinemas);
                 this.isLoadingCinemas.set(false);
               }
             },
             error: () => {
               loadedCount++;
-              if (loadedCount === cinemasData.length) {
+              if (loadedCount === cinemas.length) {
                 this.cinemas.set(resultCinemas);
                 this.isLoadingCinemas.set(false);
               }
-            }
+            },
           });
         });
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Error loading cinemas', err);
         this.cinemas.set([]);
         this.isLoadingCinemas.set(false);
-      }
+      },
     });
   }
 
-  selectDate(date: Date) {
+  selectDate(date: string) {
     this.selectedDate.set(date);
+    const movie = this.movie();
+    if (movie?._id) {
+      this.loadShowtimes(movie._id, date);
+    }
   }
 }

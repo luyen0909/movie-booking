@@ -17,7 +17,7 @@
   <section class="movie-section">
     <div class="container">
       <div class="movie-grid">
-        <article class="movie-card" *ngFor="let movie of movies()" [routerLink]="['/movies', movie._id]">
+        <article class="movie-card" *ngFor="let movie of movies()" [routerLink]="['/movies', movie.slug]">
           <div class="card-image-wrapper">
             <img [src]="movie.image" [alt]="movie.title" class="card-image">
             <div class="badges">

@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Booking } from '../../services/booking';
 
 @Component({
   selector: 'app-booking-confirm',
@@ -12,47 +13,68 @@ import { FormsModule } from '@angular/forms';
 })
 export class BookingConfirm implements OnInit {
   private router = inject(Router);
-  
+  private platformId = inject(PLATFORM_ID);
+  private bookingService = inject(Booking);
+
   movieInfo: any;
   selectedSeats: string[] = [];
-  totalPrice: number = 0;
-  
-  selectedPayment: string = 'momo';
+  totalPrice = 0;
+  showtimeId = '';
+
+  selectedPayment: 'momo' | 'zalopay' | 'atm' | 'visa' = 'momo';
   isProcessing = false;
-  isSuccess = false;
+  errorMessage = '';
 
   constructor() {
-    // It's safer to read history state in constructor
     const state = this.router.getCurrentNavigation()?.extras.state;
     if (state) {
       this.movieInfo = state['movieInfo'];
-      this.selectedSeats = state['selectedSeats'];
-      this.totalPrice = state['totalPrice'];
+      this.selectedSeats = state['selectedSeats'] ?? [];
+      this.totalPrice = state['totalPrice'] ?? 0;
+      this.showtimeId = state['showtimeId'] ?? '';
     }
   }
 
   ngOnInit() {
     if (!this.movieInfo) {
-       const state = history.state;
-       if (state && state.movieInfo) {
-         this.movieInfo = state.movieInfo;
-         this.selectedSeats = state.selectedSeats;
-         this.totalPrice = state.totalPrice;
-       } else {
-         // Fallback if accessed directly
-         this.movieInfo = { title: 'Dune: Hành Tinh Cát 2', cinema: 'Galaxy Nguyễn Du', room: 'Phòng 2', showtime: '20:45 - 2026-03-24' };
-         this.selectedSeats = ['J6', 'J7'];
-         this.totalPrice = 150000;
-       }
+      const state = isPlatformBrowser(this.platformId) ? history.state : null;
+      if (state?.movieInfo) {
+        this.movieInfo = state.movieInfo;
+        this.selectedSeats = state.selectedSeats ?? [];
+        this.totalPrice = state.totalPrice ?? 0;
+        this.showtimeId = state.showtimeId ?? '';
+      }
     }
   }
 
   confirmPayment() {
+    if (!this.showtimeId || this.selectedSeats.length === 0) {
+      this.errorMessage = 'Thiếu thông tin suất chiếu hoặc ghế.';
+      return;
+    }
+
     this.isProcessing = true;
-    setTimeout(() => {
-      this.isProcessing = false;
-      this.isSuccess = true;
-    }, 1500);
+    this.errorMessage = '';
+
+    this.bookingService.createBooking({
+      showtimeId: this.showtimeId,
+      seats: this.selectedSeats,
+      paymentMethod: this.selectedPayment,
+    }).subscribe({
+      next: (booking) => {
+        this.isProcessing = false;
+        this.router.navigate(['/payment'], {
+          state: {
+            bookingId: booking._id,
+            bookingCode: booking.bookingCode,
+          },
+        });
+      },
+      error: (error) => {
+        this.isProcessing = false;
+        this.errorMessage = error.error?.message || 'Không thể tạo đơn đặt vé.';
+      },
+    });
   }
 
   goHome() {

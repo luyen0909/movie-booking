@@ -1,7 +1,6 @@
 <div class="booking-confirm-page dark-theme">
-  <div class="container" *ngIf="!isSuccess; else successTpl">
+  <div class="container">
     <div class="split-layout">
-      <!-- Cột trái: Thông tin vé -->
       <div class="ticket-summary-col">
         <h2 class="col-title">TÓM TẮT VÉ</h2>
         <div class="ticket-card" *ngIf="movieInfo">
@@ -25,49 +24,34 @@
         </div>
       </div>
 
-      <!-- Cột phải: Phương thức thanh toán -->
       <div class="payment-method-col">
-        <h2 class="col-title">PHƯƠNG THỨC THANH TOÁN</h2>
+        <h2 class="col-title">GIỮ CHỖ & CHUYỂN SANG THANH TOÁN</h2>
         <div class="payment-options">
           <label class="pay-option" [class.selected]="selectedPayment === 'momo'">
             <input type="radio" name="payment" value="momo" [(ngModel)]="selectedPayment">
-            <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo">
             <span>Ví MoMo</span>
           </label>
-          <label class="pay-option" [class.selected]="selectedPayment === 'zalo'">
-            <input type="radio" name="payment" value="zalo" [(ngModel)]="selectedPayment">
-            <img src="https://zalo-article-photo.zadn.vn/f2430ca3226db975b9f7#35381165" alt="ZaloPay" style="border-radius:8px">
+          <label class="pay-option" [class.selected]="selectedPayment === 'zalopay'">
+            <input type="radio" name="payment" value="zalopay" [(ngModel)]="selectedPayment">
             <span>ZaloPay</span>
           </label>
-          <label class="pay-option" [class.selected]="selectedPayment === 'vnpay'">
-            <input type="radio" name="payment" value="vnpay" [(ngModel)]="selectedPayment">
-            <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/dathang/vnpay_logo_2x.png" alt="VNPay" style="background:#fff; border-radius:4px; padding:2px">
-            <span>VNPay</span>
+          <label class="pay-option" [class.selected]="selectedPayment === 'atm'">
+            <input type="radio" name="payment" value="atm" [(ngModel)]="selectedPayment">
+            <span>ATM / Internet Banking</span>
           </label>
           <label class="pay-option" [class.selected]="selectedPayment === 'visa'">
             <input type="radio" name="payment" value="visa" [(ngModel)]="selectedPayment">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style="background:#fff; padding:2px; border-radius:4px">
-            <span>Thẻ quốc tế (Visa, Master)</span>
+            <span>Thẻ quốc tế (Visa / Master)</span>
           </label>
         </div>
 
+        <p *ngIf="errorMessage" style="color:#ff8a8a; margin-top: 12px;">{{ errorMessage }}</p>
+
         <button class="btn-primary btn-pay mt-4" [disabled]="isProcessing" (click)="confirmPayment()">
-          <span *ngIf="!isProcessing">THANH TOÁN LẬP TỨC</span>
-          <span *ngIf="isProcessing" class="spinner">Đang chờ cổng thanh toán...</span>
+          <span *ngIf="!isProcessing">TIẾP TỤC ĐẾN BƯỚC THANH TOÁN</span>
+          <span *ngIf="isProcessing" class="spinner">Đang giữ chỗ...</span>
         </button>
       </div>
     </div>
   </div>
-
-  <ng-template #successTpl>
-    <div class="success-screen">
-      <div class="success-card">
-        <div class="check-icon">✓</div>
-        <h2>THANH TOÁN THÀNH CÔNG!</h2>
-        <p>Vé của bạn đã được thanh toán và gửi tự động về Email/SMS.</p>
-        <p>Mã đặt vé: <strong style="color: #66fcf1; font-size: 1.2rem;">#{{ (100000 + (totalPrice/1000)) | number:'1.0-0' }}GXB</strong></p>
-        <button class="btn-primary mt-4" (click)="goHome()">Tiếp Tục Khám Phá</button>
-      </div>
-    </div>
-  </ng-template>
 </div>
