@@ -1,1 +1,26 @@
-<p>search-page works!</p>
+<section class="search-page">
+  <div class="search-box">
+    <h1>Tìm kiếm phim</h1>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input type="text" formControlName="keyword" placeholder="Nhập tên phim cần tìm..." />
+      <button type="submit">Tìm kiếm</button>
+    </form>
+  </div>
+
+  <p *ngIf="loading()">Đang tìm kiếm...</p>
+
+  <div class="search-results" *ngIf="results().length > 0">
+    <a class="movie-card" *ngFor="let movie of results()" [routerLink]="['/movies', movie.slug]">
+      <img [src]="movie.image" [alt]="movie.title" />
+      <div>
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.duration }} phút • {{ movie.ageRating }}</p>
+        <p>{{ movie.status === 'now-showing' ? 'Đang chiếu' : 'Sắp chiếu' }}</p>
+      </div>
+    </a>
+  </div>
+
+  <div *ngIf="searched() && !loading() && results().length === 0" class="empty-state">
+    <p>Không tìm thấy phim phù hợp.</p>
+  </div>
+</section>
