@@ -25,16 +25,14 @@ $text-muted: #a0a0a0;
   gap: 20px;
 }
 
-// Logo
 .logo-img {
   height: 40px;
   object-fit: contain;
-  background: white; // If logo needs white bg
+  background: white;
   padding: 5px 10px;
   border-radius: 4px;
 }
 
-// Search Bar
 .search-bar {
   display: flex;
   align-items: center;
@@ -52,10 +50,8 @@ $text-muted: #a0a0a0;
     color: white;
     width: 100%;
     font-size: 0.9rem;
-    
-    &::placeholder {
-      color: $text-muted;
-    }
+
+    &::placeholder { color: $text-muted; }
   }
 
   .search-btn {
@@ -66,14 +62,11 @@ $text-muted: #a0a0a0;
     display: flex;
     align-items: center;
     padding: 0;
-    
-    &:hover {
-      color: $primary;
-    }
+
+    &:hover { color: $primary; }
   }
 }
 
-// Main Navigation
 .main-nav {
   .nav-list {
     display: flex;
@@ -91,30 +84,27 @@ $text-muted: #a0a0a0;
     transition: color 0.2s;
     font-size: 0.95rem;
 
-    &:hover {
-      color: $primary;
-    }
+    &:hover { color: $primary; }
   }
 
   .nav-dropdown {
     position: relative;
-    
+
     .dropdown-menu {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 12px);
       left: 50%;
-      transform: translateX(-50%) translateY(10px);
+      transform: translateX(-50%);
       background: #2a2a2a;
       min-width: 200px;
       padding: 10px 0;
       margin: 0;
       border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       list-style: none;
-      
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s ease;
+      transition: opacity 0.2s ease, transform 0.2s ease;
       z-index: 1000;
       border: 1px solid rgba(255, 255, 255, 0.1);
 
@@ -129,7 +119,7 @@ $text-muted: #a0a0a0;
         &:hover {
           background-color: rgba(#f26b38, 0.1);
           color: $primary;
-          padding-left: 30px; // Smooth indent animation
+          padding-left: 30px;
         }
       }
     }
@@ -137,49 +127,42 @@ $text-muted: #a0a0a0;
     &:hover .dropdown-menu {
       opacity: 1;
       visibility: visible;
-      transform: translateX(-50%) translateY(20px);
-      
-      &::before {
-        content: '';
-        position: absolute;
-        top: -20px;
-        height: 20px;
-        left: 0;
-        right: 0;
-      }
+      transform: translateX(-50%) translateY(0);
     }
   }
 }
 
-// User Actions
 .user-actions {
   display: flex;
   align-items: center;
   gap: 15px;
 
-  .btn-login {
+  .btn-login,
+  .btn-register {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    color: $text-light;
     font-weight: 600;
     font-size: 0.95rem;
-    transition: color 0.2s;
-    
-    &:hover {
-      color: $primary;
-    }
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-login {
+    color: $text-light;
+    padding: 8px 6px;
+
+    &:hover { color: $primary; }
   }
 
   .btn-register {
-    text-decoration: none;
     background: $primary;
     color: white;
     padding: 8px 24px;
     border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 4px 10px rgba(#f26b38, 0.3);
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 15px rgba(#f26b38, 0.5);
@@ -187,22 +170,23 @@ $text-muted: #a0a0a0;
   }
 }
 
-// User Menu (Profile Dropdown)
 .user-menu {
   position: relative;
-  cursor: pointer;
 
   .user-avatar-btn {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: 20px;
     transition: background 0.2s;
+    background: transparent;
+    border: 0;
+    color: $text-light;
 
     &:hover {
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
     }
   }
 
@@ -225,7 +209,7 @@ $text-muted: #a0a0a0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(242,107,56,0.4);
+    border: 2px solid rgba(242, 107, 56, 0.4);
     flex-shrink: 0;
   }
 
@@ -243,27 +227,36 @@ $text-muted: #a0a0a0;
     color: $text-muted;
     transition: transform 0.2s;
     flex-shrink: 0;
+
+    &.open {
+      transform: rotate(180deg);
+      color: $primary;
+    }
   }
 
-  &:hover .chevron {
-    transform: rotate(180deg);
-    color: $primary;
-  }
-
-  // Override dropdown menu for user
   .user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
     right: 0;
     left: auto;
-    transform: translateY(10px);
-    min-width: 240px;
+    min-width: 260px;
+    padding: 10px 0;
+    margin: 0;
+    border-radius: 12px;
+    background: #242424;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 1200;
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: -20px;
-      height: 20px;
-      left: 0;
-      right: 0;
+    &.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
     .dropdown-user-info {
@@ -348,7 +341,6 @@ $text-muted: #a0a0a0;
       &:hover {
         background: rgba(242,107,56,0.1);
         color: $primary;
-        padding-left: 24px;
       }
     }
 
@@ -360,11 +352,5 @@ $text-muted: #a0a0a0;
         color: #ff6b6b !important;
       }
     }
-  }
-
-  &:hover .user-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(14px);
   }
 }

@@ -1,5 +1,5 @@
-import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,6 +17,8 @@ export class Header {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
+  dropdownOpen = signal(false);
+
   constructor() {
     this.authState.refresh();
 
@@ -26,12 +28,28 @@ export class Header {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
+        this.dropdownOpen.set(false);
         this.authState.refresh();
       });
   }
 
+  @HostListener('document:click')
+  closeDropdownOnOutsideClick(): void {
+    this.dropdownOpen.set(false);
+  }
+
+  toggleDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.dropdownOpen.update(value => !value);
+  }
+
+  keepDropdownOpen(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
   logout(): void {
     this.authState.clearUser();
+    this.dropdownOpen.set(false);
     this.router.navigateByUrl('/');
   }
 
