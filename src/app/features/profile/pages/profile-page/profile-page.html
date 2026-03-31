@@ -1,10 +1,13 @@
 <section class="profile-page" *ngIf="profile(); else guestTpl">
   <div class="profile-card">
-    <img [src]="profile()?.avatar" [alt]="profile()?.fullName" class="avatar" />
+    <div class="avatar-wrap">
+      <img [src]="profile()?.avatar" [alt]="profile()?.fullName" class="avatar" />
+    </div>
     <div class="content">
+      <span class="eyebrow">Tài khoản thành viên</span>
       <h1>{{ profile()?.fullName }}</h1>
-      <p>{{ profile()?.email }}</p>
-      <p *ngIf="profile()?.phone">{{ profile()?.phone }}</p>
+      <p class="email">{{ profile()?.email }}</p>
+      <p class="phone" *ngIf="profile()?.phone">{{ profile()?.phone }}</p>
       <div class="meta">
         <span>Hạng thành viên: {{ profile()?.membershipTier || 'Standard' }}</span>
         <span>Điểm tích lũy: {{ profile()?.loyaltyPoints || 0 }}</span>

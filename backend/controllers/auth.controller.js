@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const Booking = require('../models/booking.model');
@@ -17,6 +17,10 @@ function signToken(user) {
   );
 }
 
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
 exports.register = async (req, res) => {
   try {
     const { fullName, email, password, phone } = req.body;
@@ -30,7 +34,7 @@ exports.register = async (req, res) => {
       return res.status(409).json({ message: 'Email này đã được sử dụng.' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = hashPassword(password);
     const user = await User.create({
       fullName,
       email: email.toLowerCase(),
@@ -73,7 +77,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = hashPassword(password) === user.password;
     if (!isMatch) {
       return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng.' });
     }

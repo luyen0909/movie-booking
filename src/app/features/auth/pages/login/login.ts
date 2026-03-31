@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
+import { AuthState } from '../../../../core/services/auth-state';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { Auth } from '../../services/auth';
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
+  private authState = inject(AuthState);
   private router = inject(Router);
 
   isSubmitting = signal(false);
@@ -34,9 +36,11 @@ export class Login {
     this.errorMessage.set('');
 
     this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => {
+      next: async (response) => {
         this.isSubmitting.set(false);
-        this.router.navigateByUrl('/');
+        this.authState.setUser(response.user);
+        await this.router.navigateByUrl('/');
+        this.authState.refresh();
       },
       error: (error) => {
         this.isSubmitting.set(false);

@@ -43,8 +43,57 @@
 
     <!-- USER ACTIONS -->
     <div class="user-actions">
-      <a routerLink="/auth/login" class="btn-login">Đăng nhập</a>
-      <a routerLink="/auth/register" class="btn-register">Đăng ký</a>
+
+      <!-- Chưa đăng nhập -->
+      @if (!authState.isLoggedIn()) {
+        <a routerLink="/auth/login" class="btn-login">Đăng nhập</a>
+        <a routerLink="/auth/register" class="btn-register">Đăng ký</a>
+      }
+
+      <!-- Đã đăng nhập: Profile Dropdown -->
+      @if (authState.isLoggedIn()) {
+        <div class="user-menu nav-dropdown">
+          <div class="user-avatar-btn">
+            @if (authState.currentUser()?.avatar) {
+              <img [src]="authState.currentUser()!.avatar" [alt]="authState.currentUser()!.fullName" class="avatar-img" />
+            } @else {
+              <div class="avatar-letter">{{ getAvatarLetter() }}</div>
+            }
+            <span class="user-name">{{ authState.currentUser()?.fullName }}</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+
+          <ul class="dropdown-menu user-dropdown">
+            <li class="dropdown-user-info">
+              <div class="dropdown-avatar">
+                @if (authState.currentUser()?.avatar) {
+                  <img [src]="authState.currentUser()!.avatar" [alt]="authState.currentUser()!.fullName" />
+                } @else {
+                  <div class="avatar-letter-lg">{{ getAvatarLetter() }}</div>
+                }
+              </div>
+              <div>
+                <div class="dropdown-name">{{ authState.currentUser()?.fullName }}</div>
+                <div class="dropdown-email">{{ authState.currentUser()?.email }}</div>
+                @if (authState.currentUser()?.loyaltyPoints !== undefined) {
+                  <div class="dropdown-points">⭐ {{ authState.currentUser()?.loyaltyPoints }} điểm</div>
+                }
+              </div>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li><a routerLink="/profile">👤 Trang cá nhân</a></li>
+            <li><a routerLink="/profile/booking-history">🎟️ Vé của tôi</a></li>
+            @if (authState.userRole() === 'admin') {
+              <li><a routerLink="/admin">⚙️ Quản trị</a></li>
+            }
+            <li class="dropdown-divider"></li>
+            <li>
+              <button class="btn-logout" (click)="logout()">🚪 Đăng xuất</button>
+            </li>
+          </ul>
+        </div>
+      }
+
     </div>
   </div> 
 </header>
