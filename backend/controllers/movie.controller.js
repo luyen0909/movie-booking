@@ -12,21 +12,37 @@ exports.getMovieList = async (req, res) => {
   }
 };
 
-// Dành cho trang Now Showing
+// Dành cho trang Now Showing (có phân trang)
 exports.getNowShowing = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing' }).populate('genre');
-    res.json(movies);
+    const page  = Math.max(1, parseInt(req.query.page)  || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 8);
+    const skip  = (page - 1) * limit;
+
+    const [movies, total] = await Promise.all([
+      Movie.find({ status: 'now-showing' }).populate('genre').skip(skip).limit(limit),
+      Movie.countDocuments({ status: 'now-showing' }),
+    ]);
+
+    res.json({ movies, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Dành cho trang Coming Soon
+// Dành cho trang Coming Soon (có phân trang)
 exports.getComingSoon = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'coming-soon' }).populate('genre');
-    res.json(movies);
+    const page  = Math.max(1, parseInt(req.query.page)  || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 8);
+    const skip  = (page - 1) * limit;
+
+    const [movies, total] = await Promise.all([
+      Movie.find({ status: 'coming-soon' }).populate('genre').skip(skip).limit(limit),
+      Movie.countDocuments({ status: 'coming-soon' }),
+    ]);
+
+    res.json({ movies, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -48,14 +64,25 @@ exports.getMoviesByCategorySlug = async (req, res) => {
 
 exports.searchMovies = async (req, res) => {
   try {
-    const keyword = req.params.keyword?.trim();
-    if (!keyword) {
+    // Hỗ trợ cả path param (/search/:keyword) và query param (?q=keyword)
+    const raw = (req.params.keyword ?? req.query.q ?? '').trim();
+
+    if (!raw) {
       return res.json([]);
     }
 
+    // Escape ký tự đặc biệt trong regex để tránh lỗi injection
+    const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
     const movies = await Movie.find({
-      title: { $regex: keyword, $options: 'i' },
-    }).populate('genre');
+      $or: [
+        { title:    { $regex: escaped, $options: 'i' } },
+        { director: { $regex: escaped, $options: 'i' } },
+        { cast:     { $regex: escaped, $options: 'i' } },
+      ],
+    })
+      .populate('genre')
+      .limit(30); // Giới hạn kết quả trả về
 
     res.json(movies);
   } catch (err) {

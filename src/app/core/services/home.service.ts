@@ -1,9 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, shareReplay } from 'rxjs';
+import { Observable, of, shareReplay, map } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Movie } from './movie.service';
-import { category } from './category.service';
+import { Movie } from '../models/movie.model';
+import { Category } from '../models/categories.model';
+import { HomeData } from '../models/home.model';
+
+// Re-export để các file khác vẫn import được từ đây nếu cần
+export type { HomeData };
 
 @Injectable({
   providedIn: 'root'
@@ -12,85 +16,67 @@ export class HomeService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/home';
 
-  // Cache các Observable để tránh gọi API lại khi navigate giữa các trang
-  private cache = new Map<string, Observable<any>>();
+  // Cache toàn bộ trang chủ trong 1 request duy nhất
+  private homeData$: Observable<HomeData> | null = null;
 
-  private cached<T>(key: string, source$: Observable<T>): Observable<T> {
-    if (!this.cache.has(key)) {
-      this.cache.set(key, source$.pipe(shareReplay(1)));
+  /** Lấy toàn bộ dữ liệu trang chủ từ 1 API call duy nhất */
+  getHomeData(): Observable<HomeData> {
+    if (!this.homeData$) {
+      this.homeData$ = this.http.get<{ success: boolean; data: HomeData }>(`${this.apiUrl}`).pipe(
+        map(res => res.data),
+        catchError(err => {
+          console.error('getHomeData failed:', err.message);
+          return of({
+            banners: [],
+            nowShowing: [],
+            comingSoon: [],
+            topTrending: [],
+            categories: [],
+            posts: [],
+            promotions: []
+          } as HomeData);
+        }),
+        shareReplay(1)
+      );
     }
-    return this.cache.get(key)! as Observable<T>;
+    return this.homeData$;
   }
 
-  // lấy danh sách phim đang chiếu
-  getNowShowing(): Observable<Movie[]> {
-    return this.cached('now-showing',
-      this.http.get<Movie[]>(`${this.apiUrl}/now-showing`).pipe(
-        catchError(this.handleError<Movie[]>('getNowShowing', []))
-      )
-    );
-  }
+  // ── Convenience methods — lấy từng phần từ cache chung ──────────────
 
-  // lấy danh sách phim sắp chiếu
-  getComingSoon(): Observable<Movie[]> {
-    return this.cached('coming-soon',
-      this.http.get<Movie[]>(`${this.apiUrl}/coming-soon`).pipe(
-        catchError(this.handleError<Movie[]>('getComingSoon', []))
-      )
-    );
-  }
-
-  // lấy danh sách phim top trending
-  getTopTrending(): Observable<Movie[]> {
-    return this.cached('top-trending',
-      this.http.get<Movie[]>(`${this.apiUrl}/top-trending`).pipe(
-        catchError(this.handleError<Movie[]>('getTopTrending', []))
-      )
-    );
-  }
-
-  // lấy danh sách phim nổi bật cho Banner
   getBannerMovies(): Observable<Movie[]> {
-    return this.cached('banner',
-      this.http.get<Movie[]>(`${this.apiUrl}/banner`).pipe(
-        catchError(this.handleError<Movie[]>('getBannerMovies', []))
-      )
-    );
+    return this.getHomeData().pipe(map(d => d.banners));
   }
 
-  // lấy danh sách Góc điện ảnh (tin tức) - cached để không reload mỗi lần navigate
+  getNowShowing(): Observable<Movie[]> {
+    return this.getHomeData().pipe(map(d => d.nowShowing));
+  }
+
+  getComingSoon(): Observable<Movie[]> {
+    return this.getHomeData().pipe(map(d => d.comingSoon));
+  }
+
+  getTopTrending(): Observable<Movie[]> {
+    return this.getHomeData().pipe(map(d => d.topTrending));
+  }
+
+  getCategories(): Observable<Category[]> {
+    return this.getHomeData().pipe(map(d => d.categories));
+  }
+
   getPosts(): Observable<any[]> {
-    return this.cached('posts',
-      this.http.get<any[]>(`${this.apiUrl}/posts`).pipe(
-        catchError(this.handleError<any[]>('getPosts', []))
-      )
-    );
+    return this.getHomeData().pipe(map(d => d.posts));
   }
 
-  // lấy danh sách Khuyến mãi - cached để không reload mỗi lần navigate
   getPromotions(): Observable<any[]> {
-    return this.cached('promotions',
-      this.http.get<any[]>(`${this.apiUrl}/promotions`).pipe(
-        catchError(this.handleError<any[]>('getPromotions', []))
-      )
-    );
+    return this.getHomeData().pipe(map(d => d.promotions));
   }
 
-  // lấy danh sách thể loại phim
-  getCategories(): Observable<category[]> {
-    return this.cached('categories',
-      this.http.get<category[]>(`${this.apiUrl}/categories`).pipe(
-        catchError(this.handleError<category[]>('getCategories', []))
-      )
-    );
-  }
+  // ── Quick Booking (vẫn gọi API riêng theo params) ──────────────────
 
-  // ── Quick Booking ─────────────────────────────────────────────
   getQuickMovies(): Observable<any[]> {
-    return this.cached('quick-movies',
-      this.http.get<any[]>(`${this.apiUrl}/quick/movies`).pipe(
-        catchError(this.handleError<any[]>('getQuickMovies', []))
-      )
+    return this.http.get<any[]>(`${this.apiUrl}/quick/movies`).pipe(
+      catchError(this.handleError<any[]>('getQuickMovies', []))
     );
   }
 
@@ -112,16 +98,10 @@ export class HomeService {
     );
   }
 
-  /** Xóa cache thủ công khi cần refresh dữ liệu */
-  clearCache(key?: string): void {
-    if (key) {
-      this.cache.delete(key);
-    } else {
-      this.cache.clear();
-    }
+  clearCache(): void {
+    this.homeData$ = null;
   }
 
-  // xử lý lỗi
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`${operation} failed: ${error.message}`);

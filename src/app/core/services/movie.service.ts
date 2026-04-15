@@ -1,28 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Movie, PagedResponse } from '../models/movie.model';
 
-export interface Movie {
-  banner: string;
-  trailer: string;
-  _id: string;
-  slug: string;
-  title: string;
-  image: string;
-  genre: any;
-  description: string;
-  director: string;
-  cast: string[];
-  releaseDate: string;
-  duration: number;
-  ageRating: string;
-  vote: number;
-  voteCount: number;
-  country: string;
-  studio: string;
-  status: string;
-}
+// Re-export để các file cũ đang import từ đây không bị lỗi
+export type { Movie, PagedResponse };
 
 @Injectable({
   providedIn: 'root'
@@ -31,15 +14,17 @@ export class MovieService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/movies';
 
-  getNowShowingMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.apiUrl}/now-showing`).pipe(
-      catchError(this.handleError<Movie[]>('getNowShowingMovies', []))
+  getNowShowingMovies(page = 1, limit = 8): Observable<PagedResponse> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<PagedResponse>(`${this.apiUrl}/now-showing`, { params }).pipe(
+      catchError(this.handleError<PagedResponse>('getNowShowingMovies', { movies: [], total: 0, page: 1, totalPages: 1 }))
     );
   }
 
-  getComingSoonMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.apiUrl}/coming-soon`).pipe(
-      catchError(this.handleError<Movie[]>('getComingSoonMovies', []))
+  getComingSoonMovies(page = 1, limit = 8): Observable<PagedResponse> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
+    return this.http.get<PagedResponse>(`${this.apiUrl}/coming-soon`, { params }).pipe(
+      catchError(this.handleError<PagedResponse>('getComingSoonMovies', { movies: [], total: 0, page: 1, totalPages: 1 }))
     );
   }
 

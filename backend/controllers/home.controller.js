@@ -5,14 +5,124 @@ const Showtime = require('../models/showtime.model');
 const Cinema = require('../models/cinema.model'); 
 const Booking = require('../models/booking.model');
 
+// ── Helper functions (dùng nội bộ, không export) ─────────────────────
+async function _getBannerMovies() {
+  return Movie.find({ status: 'now-showing', banner: { $exists: true, $ne: '' } })
+              .sort({ vote: -1 })
+              .limit(5)
+              .select('title banner image genre description vote duration ageRating trailer');
+}
+
+async function _getNowShowing() {
+  return Movie.find({ status: 'now-showing' }).limit(8);
+}
+
+async function _getComingSoon() {
+  return Movie.find({ status: 'coming-soon' }).limit(8);
+}
+
+async function _getTopTrending() {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const trendingData = await Booking.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: sevenDaysAgo },
+        paymentStatus: 'success'
+      }
+    },
+    {
+      $group: {
+        _id: "$movieId",
+        ticketsSold: { $sum: { $size: { $ifNull: ["$seats", []] } } }
+      }
+    }
+  ]);
+
+  const nowShowingMovies = await Movie.find({ status: 'now-showing' });
+
+  const ticketsMap = {};
+  trendingData.forEach(item => {
+    if (item._id) {
+      ticketsMap[item._id.toString()] = item.ticketsSold;
+    }
+  });
+
+  const moviesWithStats = nowShowingMovies.map(movie => ({
+    ...movie.toObject(),
+    ticketsSold: ticketsMap[movie._id.toString()] || 0
+  }));
+
+  moviesWithStats.sort((a, b) => {
+    if (b.ticketsSold !== a.ticketsSold) return b.ticketsSold - a.ticketsSold;
+    if (b.vote !== a.vote) return b.vote - a.vote;
+    return b.voteCount - a.voteCount;
+  });
+
+  return moviesWithStats.slice(0, 5);
+}
+
+async function _getCategories() {
+  return Category.find();
+}
+
+async function _getReviews() {
+  return Post.find({ type: { $in: ['review', 'blog'] } })
+             .sort({ createdAt: -1 })
+             .limit(4);
+}
+
+async function _getPromotions() {
+  return Post.find({ type: 'promotion' })
+             .sort({ createdAt: -1 })
+             .limit(4);
+}
+
+// ── GET /api/home — Trả về toàn bộ dữ liệu trang chủ trong 1 request ─
 exports.getHome = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing' }).limit(5);
-    res.json(movies);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const [
+      banners,
+      nowShowing,
+      comingSoon,
+      topTrending,
+      categories,
+      posts,
+      promotions
+    ] = await Promise.all([
+      _getBannerMovies(),
+      _getNowShowing(),
+      _getComingSoon(),
+      _getTopTrending(),
+      _getCategories(),
+      _getReviews(),
+      _getPromotions()
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        banners,
+        nowShowing,
+        comingSoon,
+        topTrending,
+        categories,
+        posts,
+        promotions
+      }
+    });
+  } catch (error) {
+    console.error('getHome error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy dữ liệu trang chủ',
+      error: error.message
+    });
   }
 };
+
+// ── Quick Booking ──────────────────────────────────────────────────────
 
 // 1. Lấy danh sách phim đang chiếu (cho dropdown Chọn Phim)
 exports.getQuickMovies = async (req, res) => {
@@ -25,7 +135,6 @@ exports.getQuickMovies = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 // 2. Lấy danh sách rạp đang chiếu bộ phim đã chọn
 exports.getQuickCinemas = async (req, res) => {
@@ -76,129 +185,67 @@ exports.getQuickShowtimes = async (req, res) => {
   }
 };
 
-// Lấy danh sách phim cho Banner trang chủ (ưu tiên phim có ảnh banner)
+// ── Individual endpoints (giữ lại để backward compatibility) ──────────
+
+// GET /api/home/banner
 exports.getBannerMovies = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing', banner: { $exists: true, $ne: '' } })
-                              .sort({ vote: -1 })
-                              .limit(5)
-                              .select('title banner image genre description vote duration ageRating trailer');
-    res.json(movies);
+    res.json(await _getBannerMovies());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Trả về phim Đang chiếu cho Trang chủ (Giới hạn 5 phim)
+// GET /api/home/now-showing
 exports.getNowShowing = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'now-showing' }).limit(8);
-    res.json(movies);
+    res.json(await _getNowShowing());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Trả về phim Sắp chiếu cho Trang chủ (Giới hạn 5 phim)
+// GET /api/home/coming-soon
 exports.getComingSoon = async (req, res) => {
   try {
-    const movies = await Movie.find({ status: 'coming-soon' }).limit(8);
-    res.json(movies);
+    res.json(await _getComingSoon());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Trả về phim Top Trending cho Trang chủ (Giới hạn 5 phim)
+// GET /api/home/top-trending
 exports.getTopTrending = async (req, res) => {
   try {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    // 1. Thống kê số lượng vé bán ra trong 7 ngày qua cho từng phim (chỉ tính giao dịch thành công)
-    const trendingData = await Booking.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: sevenDaysAgo },
-          paymentStatus: 'success'
-        }
-      },
-      {
-        $group: {
-          _id: "$movieId",
-          ticketsSold: { $sum: { $size: { $ifNull: ["$seats", []] } } }
-        }
-      }
-    ]);
-
-    // 2. Lấy tất cả phim đang chiếu
-    const nowShowingMovies = await Movie.find({ status: 'now-showing' });
-
-    // 3. Map dữ liệu vé bán với phim
-    const ticketsMap = {};
-    trendingData.forEach(item => {
-      if (item._id) {
-        ticketsMap[item._id.toString()] = item.ticketsSold;
-      }
-    });
-
-    const moviesWithStats = nowShowingMovies.map(movie => {
-      return {
-        ...movie.toObject(),
-        ticketsSold: ticketsMap[movie._id.toString()] || 0
-      };
-    });
-
-    // 4. Sắp xếp: Ưu tiên vé bán ra (thực tế thị trường), sau đó đến vote và voteCount
-    moviesWithStats.sort((a, b) => {
-      if (b.ticketsSold !== a.ticketsSold) {
-        return b.ticketsSold - a.ticketsSold;
-      }
-      if (b.vote !== a.vote) {
-        return b.vote - a.vote;
-      }
-      return b.voteCount - a.voteCount;
-    });
-
-    // 5. Trả về 5 phim đầu tiên (Top 5 Trending)
-    res.json(moviesWithStats.slice(0, 5));
+    res.json(await _getTopTrending());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Trả về danh mục hiển thị ở Trang chủ
-// Lấy danh mục thể loại
+// GET /api/home/categories
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
-    res.json(categories);
+    res.json(await _getCategories());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Lấy danh sách Góc Điện Ảnh (Reviews/Blogs) giới hạn 4 bài mới nhất
+// GET /api/home/posts
 exports.getReviews = async (req, res) => {
   try {
-    const reviews = await Post.find({ type: { $in: ['review', 'blog'] } })
-                              .sort({ createdAt: -1 })
-                              .limit(4);
-    res.json(reviews);
+    res.json(await _getReviews());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Lấy danh sách Tin Khuyến Mãi giới hạn 4 bài mới nhất
+// GET /api/home/promotions
 exports.getPromotions = async (req, res) => {
   try {
-    const promotions = await Post.find({ type: 'promotion' })
-                                 .sort({ createdAt: -1 })
-                                 .limit(4);
-    res.json(promotions);
+    res.json(await _getPromotions());
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-

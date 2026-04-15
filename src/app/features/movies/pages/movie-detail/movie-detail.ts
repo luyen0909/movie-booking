@@ -30,6 +30,7 @@ interface DateOption {
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.scss',
 })
+
 export class MovieDetail implements OnInit {
   private movieService = inject(MovieService);
   private homeService = inject(HomeService);
@@ -68,10 +69,12 @@ export class MovieDetail implements OnInit {
     return null;
   });
 
-  private nowShowingMovies = toSignal(this.movieService.getNowShowingMovies(), { initialValue: [] });
+  private nowShowingMovies = toSignal(this.movieService.getNowShowingMovies(), {
+    initialValue: { movies: [], total: 0, page: 1, totalPages: 1 },
+  });
 
   sidebarMovies = computed(() => {
-    return this.nowShowingMovies().slice(0, 3).map((m: Movie) => ({
+    return (this.nowShowingMovies()?.movies ?? []).slice(0, 3).map((m: Movie) => ({
       ...m,
       age: m.ageRating || 'T18',
     }));

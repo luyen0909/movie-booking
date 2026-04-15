@@ -11,14 +11,12 @@ const showtimeSchema = new mongoose.Schema({
   vipPriceMultiplier: { type: Number, default: 1.2 },
   sweetboxPriceMultiplier: { type: Number, default: 2.0 },
   
-  // Ghế đã bán thành công
-  bookedSeats: [{ type: String }],  // e.g., ['A1', 'B2']
+  bookedSeats: [{ type: String }],  
   
-  // Ghế đang chờ thanh toán (Lock ghế)
   lockedSeats: [{
     seatCode: { type: String, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    lockedUntil: { type: Date, required: true }  // TTL logic for holding seat
+    lockedUntil: { type: Date, required: true }  
   }],
 
   format: { type: String, enum: ['2D', '3D', 'IMAX', '4DX'], default: '2D' },

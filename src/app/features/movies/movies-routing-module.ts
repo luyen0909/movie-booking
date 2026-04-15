@@ -15,7 +15,6 @@ const routes: Routes = [
     path: 'coming-soon',
     loadComponent: () => import('./pages/coming-soon/coming-soon').then(m => m.ComingSoon)
   },
-  // THÊM ĐOẠN NÀY ĐỂ MỞ TRANG CHI TIẾT KHI CÓ ID
   {
     path: ':slug',
     loadComponent: () => import('./pages/movie-detail/movie-detail').then(m => m.MovieDetail)
